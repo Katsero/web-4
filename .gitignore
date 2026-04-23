@@ -1,0 +1,51 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# --- Виртуальное окружение ---
+.venv/
+env/
+venv/
+ENV/
+
+# --- Django ---
+*.log
+*.pot
+*.pyc
+#db.sqlite3
+media/
+staticfiles/
+
+# --- IDE ---
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Секреты и конфиги ---
+.env
+*.key
+secret_key.py
+config/local_settings.py
