@@ -7,3 +7,4 @@ python manage.py createsuperuser
     ralek
     1234
 python manage.py runserver
+pip install -r requirements.txt 

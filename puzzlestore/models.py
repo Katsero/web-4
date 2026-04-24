@@ -7,11 +7,6 @@ class Role(models.Model):
         unique=True,
         verbose_name="Название роли"
     )
-    description = models.TextField(
-        blank=True,
-        null=True,
-        verbose_name="Описание"
-    )
 
     class Meta:
         verbose_name = "Роль"
@@ -44,17 +39,6 @@ class Publisher(models.Model):
         unique=True,
         verbose_name="Название издателя"
     )
-    country = models.CharField(
-        max_length=100,
-        blank=True,
-        null=True,
-        verbose_name="Страна"
-    )
-    website = models.URLField(
-        blank=True,
-        null=True,
-        verbose_name="Сайт"
-    )
 
     class Meta:
         verbose_name = "Издатель"
@@ -69,11 +53,6 @@ class Genre(models.Model):
         max_length=100,
         unique=True,
         verbose_name="Название жанра"
-    )
-    description = models.TextField(
-        blank=True,
-        null=True,
-        verbose_name="Описание жанра"
     )
 
     class Meta:
@@ -94,7 +73,7 @@ class Creator(models.Model):
         max_length=100,
         blank=True,
         null=True,
-        verbose_name="Роль (дизайнер/художник и т.д.)"
+        verbose_name="Роль в создании (дизайнер/художник и т.д.)"
     )
 
     class Meta:
@@ -153,11 +132,6 @@ class BoardGame(models.Model):
     name = models.CharField(
         max_length=255,
         verbose_name="Название игры"
-    )
-    slug = models.SlugField(
-        max_length=255,
-        unique=True,
-        verbose_name="URL-слаг"
     )
     image_url = models.URLField(
         blank=True,
@@ -371,15 +345,6 @@ class Wishlist(models.Model):
         on_delete=models.CASCADE,
         related_name='in_wishlists',
         verbose_name="Игра"
-    )
-    quantity = models.PositiveIntegerField(
-        default=1,
-        verbose_name="Желаемое количество"
-    )
-    note = models.TextField(
-        blank=True,
-        null=True,
-        verbose_name="Заметка"
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
