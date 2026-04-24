@@ -1,9 +1,31 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import User
 from .models import (
-    Role, AgeLimit, Publisher, Genre, Creator,
-    User, BoardGame, BoardGameCreator,
+    Role, AgeLimit, Publisher, Genre, Creator, Profile,
+    BoardGame, BoardGameCreator,
     Supply, Sale, Cart, Wishlist
-)
+    )
+
+class ProfileInline(admin.StackedInline):
+    model = Profile
+    can_delete = False
+    verbose_name_plural = 'Профиль'
+    readonly_fields = ('created_at',)
+
+class CustomUserAdmin(BaseUserAdmin):
+    inlines = (ProfileInline,)
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'get_user_role')
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'profile__role')
+    search_fields = ('username', 'email', 'first_name', 'last_name')
+    
+    @admin.display(description='Роль', ordering='profile__role__name')
+    def get_user_role(self, obj):
+        return obj.profile.role.name if hasattr(obj, 'profile') and obj.profile.role else "—"
+    get_user_role.short_description = 'Роль'
+
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)
 
 class BoardGameCreatorInline(admin.TabularInline):
     model = BoardGameCreator
@@ -42,19 +64,20 @@ class CreatorAdmin(admin.ModelAdmin):
     search_fields = ('name', 'role')
     list_filter = ('role',)
 
-@admin.register(User)
-class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'username', 'email', 'phone', 'get_role_display', 'created_at')
-    list_display_links = ('username',)
-    list_filter = ('role', 'created_at')
-    search_fields = ('username', 'email', 'phone')
-    date_hierarchy = 'created_at'
-    readonly_fields = ('created_at',)
+## старое
+# @admin.register(User)
+# class UserAdmin(admin.ModelAdmin):
+#     list_display = ('id', 'username', 'email', 'phone', 'get_role_display', 'created_at')
+#     list_display_links = ('username',)
+#     list_filter = ('role', 'created_at')
+#     search_fields = ('username', 'email', 'phone')
+#     date_hierarchy = 'created_at'
+#     readonly_fields = ('created_at',)
 
-    @admin.display(description='Роль', ordering='role__name')
-    def get_role_display(self, obj):
-        return obj.role.name
-    get_role_display.short_description = 'Роль'
+#     @admin.display(description='Роль', ordering='role__name')
+#     def get_role_display(self, obj):
+#         return obj.role.name
+#     get_role_display.short_description = 'Роль'
 
 @admin.register(BoardGame)
 class BoardGameAdmin(admin.ModelAdmin):
@@ -63,10 +86,9 @@ class BoardGameAdmin(admin.ModelAdmin):
     list_filter = ('publisher', 'age_limit', 'genres', 'created_at')
     search_fields = ('name', 'description', 'genres__name')
     date_hierarchy = 'created_at'
-    readonly_fields = ('created_at', 'rating_avg')
+    readonly_fields = ('current_stock', 'created_at', 'rating_avg')
     
     filter_horizontal = ('genres',)
-    
     inlines = [BoardGameCreatorInline]
 
     @admin.display(description='Статус рейтинга', ordering='rating_avg')
@@ -94,7 +116,7 @@ class SupplyAdmin(admin.ModelAdmin):
     @admin.display(description='Общая стоимость')
     def get_total_cost(self, obj):
         return f"{obj.quantity * obj.unit_cost} ₽" if obj.unit_cost else "—"
-    get_total_cost.short_description = 'Сумма'
+        get_total_cost.short_description = 'Сумма'
 
 @admin.register(Sale)
 class SaleAdmin(admin.ModelAdmin):

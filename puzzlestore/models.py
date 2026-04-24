@@ -1,5 +1,8 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Role(models.Model):
     name = models.CharField(
@@ -83,19 +86,12 @@ class Creator(models.Model):
     def __str__(self):
         return self.name
 
-class User(models.Model):
-    username = models.CharField(
-        max_length=150,
-        unique=True,
-        verbose_name="Имя пользователя"
-    )
-    password_hash = models.CharField(
-        max_length=255,
-        verbose_name="Хэш пароля"
-    )
-    email = models.EmailField(
-        unique=True,
-        verbose_name="Email"
+class Profile(models.Model):
+    user = models.OneToOneField(
+        User, 
+        on_delete=models.CASCADE,
+        related_name='profile',
+        verbose_name="Пользователь"
     )
     phone = models.CharField(
         max_length=20,
@@ -111,8 +107,9 @@ class User(models.Model):
     role = models.ForeignKey(
         Role,
         on_delete=models.PROTECT,
-        related_name='users',
-        verbose_name="Роль"
+        related_name='profiles',
+        verbose_name="Роль",
+        default=2
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
@@ -120,12 +117,21 @@ class User(models.Model):
     )
 
     class Meta:
-        verbose_name = "Пользователь"
-        verbose_name_plural = "Пользователи"
+        verbose_name = "Профиль пользователя"
+        verbose_name_plural = "Профили пользователей"
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"{self.username} ({self.email})"
+        return f"Профиль {self.user.username}"
+    
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
 
 class BoardGame(models.Model):
     name = models.CharField(
