@@ -1,14 +1,9 @@
 from django.contrib import admin
 from .models import (
     Role, AgeLimit, Publisher, Genre, Creator,
-    User, BoardGame, BoardGameGenre, BoardGameCreator,
+    User, BoardGame, BoardGameCreator,
     Supply, Sale, Cart, Wishlist
 )
-
-class BoardGameGenreInline(admin.TabularInline):
-    model = BoardGameGenre
-    extra = 1
-    raw_id_fields = ('genre',)
 
 class BoardGameCreatorInline(admin.TabularInline):
     model = BoardGameCreator
@@ -65,11 +60,14 @@ class UserAdmin(admin.ModelAdmin):
 class BoardGameAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'publisher', 'price', 'current_stock', 'get_rating_status', 'created_at')
     list_display_links = ('name',)
-    list_filter = ('publisher', 'age_limit', 'created_at')
-    search_fields = ('name', 'description')
+    list_filter = ('publisher', 'age_limit', 'genres', 'created_at')
+    search_fields = ('name', 'description', 'genres__name')
     date_hierarchy = 'created_at'
     readonly_fields = ('created_at', 'rating_avg')
-    inlines = [BoardGameGenreInline, BoardGameCreatorInline]
+    
+    filter_horizontal = ('genres',)
+    
+    inlines = [BoardGameCreatorInline]
 
     @admin.display(description='Статус рейтинга', ordering='rating_avg')
     def get_rating_status(self, obj):
@@ -77,11 +75,6 @@ class BoardGameAdmin(admin.ModelAdmin):
             return f"{obj.rating_avg} ★"
         return "Нет оценок"
     get_rating_status.short_description = 'Рейтинг'
-
-@admin.register(BoardGameGenre)
-class BoardGameGenreAdmin(admin.ModelAdmin):
-    list_display = ('id', 'game', 'genre')
-    raw_id_fields = ('game', 'genre')
 
 @admin.register(BoardGameCreator)
 class BoardGameCreatorAdmin(admin.ModelAdmin):

@@ -63,7 +63,6 @@ class Genre(models.Model):
     def __str__(self):
         return self.name
 
-
 class Creator(models.Model):
     name = models.CharField(
         max_length=255,
@@ -160,6 +159,11 @@ class BoardGame(models.Model):
         related_name='board_games',
         verbose_name="Издатель"
     )
+    genres = models.ManyToManyField(
+        Genre,
+        verbose_name="Жанры",
+        related_name='board_games'
+    )
     current_stock = models.PositiveIntegerField(
         default=0,
         verbose_name="Текущий остаток на складе"
@@ -183,29 +187,6 @@ class BoardGame(models.Model):
 
     def __str__(self):
         return self.name
-
-class BoardGameGenre(models.Model):
-    game = models.ForeignKey(
-        BoardGame,
-        on_delete=models.CASCADE,
-        related_name='genres',
-        verbose_name="Игра"
-    )
-    genre = models.ForeignKey(
-        Genre,
-        on_delete=models.CASCADE,
-        related_name='games',
-        verbose_name="Жанр"
-    )
-
-    class Meta:
-        verbose_name = "Жанр игры"
-        verbose_name_plural = "Жанры игр"
-        unique_together = ['game', 'genre']
-        ordering = ['game', 'genre']
-
-    def __str__(self):
-        return f"{self.game} - {self.genre}"
 
 class BoardGameCreator(models.Model):
     game = models.ForeignKey(
@@ -263,7 +244,6 @@ class Supply(models.Model):
 
     def __str__(self):
         return f"{self.game} - {self.quantity} шт. ({self.supply_date})"
-
 
 class Sale(models.Model):
     game = models.ForeignKey(
@@ -331,7 +311,6 @@ class Cart(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.game} ({self.quantity} шт.)"
-
 
 class Wishlist(models.Model):
     user = models.ForeignKey(
