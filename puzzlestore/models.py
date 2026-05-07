@@ -3,6 +3,8 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.urls import reverse
+from datetime import timedelta
 
 class Role(models.Model):
     name = models.CharField(
@@ -133,10 +135,28 @@ def create_user_profile(sender, instance, created, **kwargs):
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
 
+class BoardGameManager(models.Manager):
+    def available(self):
+        return self.filter(current_stock__gt=0)
+    
+    def new_arrivals(self, days=14):
+        cutoff = timezone.now() - timedelta(days=days)
+        return self.filter(created_at__gte=cutoff)
+    
+    def stagnant(self, days=60):
+        cutoff = timezone.now() - timedelta(days=days)
+        return self.exclude(sales__sale_date__gte=cutoff)
+
 class BoardGame(models.Model):
     name = models.CharField(
         max_length=255,
         verbose_name="Название игры"
+    )
+    slug = models.SlugField(
+        max_length=255,
+        unique=True,
+        verbose_name="URL-слаг",
+        blank=True
     )
     image_url = models.URLField(
         blank=True,
@@ -186,6 +206,8 @@ class BoardGame(models.Model):
         verbose_name="Дата добавления"
     )
 
+    objects = BoardGameManager()
+
     class Meta:
         verbose_name = "Настольная игра"
         verbose_name_plural = "Настольные игры"
@@ -193,6 +215,24 @@ class BoardGame(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('puzzlestore:game_detail', kwargs={'slug': self.slug})
+
+    @property
+    def is_new_arrival(self):
+        return (timezone.now() - self.created_at).days <= 14
+
+    @property
+    def days_since_last_sale(self):
+        last_sale = self.sales.order_by('-sale_date').first()
+        if not last_sale:
+            return 999
+        return (timezone.now() - last_sale.sale_date).days
+
+    @property
+    def is_stagnant(self):
+        return self.days_since_last_sale > 60
 
 class BoardGameCreator(models.Model):
     game = models.ForeignKey(
@@ -251,7 +291,19 @@ class Supply(models.Model):
     def __str__(self):
         return f"{self.game} - {self.quantity} шт. ({self.supply_date})"
 
+    @property
+    def storage_days(self):
+        return (timezone.now().date() - self.supply_date).days
+
 class Sale(models.Model):
+    STATUS_CHOICES = [
+        ('new', 'Новый'),
+        ('paid', 'Оплачен'),
+        ('shipped', 'Отправлен'),
+        ('delivered', 'Доставлен'),
+        ('cancelled', 'Отменён'),
+    ]
+    
     game = models.ForeignKey(
         BoardGame,
         on_delete=models.PROTECT,
@@ -277,6 +329,12 @@ class Sale(models.Model):
         null=True,
         related_name='purchases',
         verbose_name="Покупатель"
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='new',
+        verbose_name="Статус"
     )
 
     class Meta:
