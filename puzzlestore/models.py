@@ -152,12 +152,7 @@ class BoardGame(models.Model):
         max_length=255,
         verbose_name="Название игры"
     )
-    slug = models.SlugField(
-        max_length=255,
-        unique=True,
-        verbose_name="URL-слаг",
-        blank=True
-    )
+
     image_url = models.URLField(
         blank=True,
         null=True,
@@ -217,7 +212,7 @@ class BoardGame(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('puzzlestore:game_detail', kwargs={'slug': self.slug})
+        return reverse('puzzlestore:game_detail', kwargs={'pk': self.id})
 
     @property
     def is_new_arrival(self):
