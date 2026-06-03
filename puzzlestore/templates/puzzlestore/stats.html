@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Статистика</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+        .section { margin: 30px 0; padding: 20px; border: 1px solid #ccc; border-radius: 4px; }
+        h2 { margin-top: 0; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #eee; }
+        .total { font-size: 24px; font-weight: bold; }
+        a { color: #0056b3; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Статистика магазина</h1>
+
+    <div class="section">
+        <h2>1. Количество игр у каждого издателя</h2>
+        <table>
+            <tr><th>Издатель</th><th>Игр в каталоге</th></tr>
+            {% for pub in publishers %}
+            <tr>
+                <td>{{ pub.name }}</td>
+                <td>{{ pub.games_count }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>2. Выручка по играм</h2>
+        <table>
+            <tr><th>Игра</th><th>Выручка</th></tr>
+            {% for game in games_revenue %}
+            <tr>
+                <td>{{ game.name }}</td>
+                <td>{{ game.revenue|default:0|floatformat:2 }} ₽</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>3. Средняя цена по жанрам</h2>
+        <table>
+            <tr><th>Жанр</th><th>Игр</th><th>Средняя цена</th></tr>
+            {% for genre in genre_stats %}
+            <tr>
+                <td>{{ genre.name }}</td>
+                <td>{{ genre.games_count }}</td>
+                <td>{{ genre.avg_price|floatformat:2 }} ₽</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>4. Общая выручка магазина</h2>
+        <p class="total">{{ total_revenue|default:0 }} ₽</p>
+    </div>
+
+    <p><a href="{% url 'puzzlestore:catalog' %}">Назад к каталогу</a></p>
+</body>
+</html>

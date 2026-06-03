@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Каталог игр</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #eee; }
+        a { color: #0056b3; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Каталог настольных игр</h1>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Название</th>
+            <th>Издатель</th>
+            <th>Цена</th>
+            <th>Остаток</th>
+            <th>Продаж</th>
+            <th>Статус</th>
+        </tr>
+        {% for game in games %}
+        <tr>
+            <td>{{ game.id }}</td>
+            <td><a href="{{ game.get_absolute_url }}">{{ game.name }}</a></td>
+            <td>{{ game.publisher.name }}</td>
+            <td>{{ game.price }} ₽</td>
+            <td>{{ game.current_stock }}</td>
+            <td>{{ game.total_sales|default:0 }}</td>
+            <td>
+                {% if game.is_new_arrival %}<span>Новинка</span>{% endif %}
+                {% if game.is_stagnant %}<span>Залежался</span>{% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7">Игр нет</td></tr>
+        {% endfor %}
+    </table>
+
+    <p><a href="{% url 'puzzlestore:stats' %}">Статистика</a></p>
+</body>
+</html>

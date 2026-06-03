@@ -152,7 +152,6 @@ class BoardGame(models.Model):
         max_length=255,
         verbose_name="Название игры"
     )
-
     image_url = models.URLField(
         blank=True,
         null=True,

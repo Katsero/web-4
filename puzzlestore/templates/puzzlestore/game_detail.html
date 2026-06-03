@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ game.name }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+        .card { border: 1px solid #ccc; padding: 20px; border-radius: 4px; max-width: 600px; }
+        .label { font-weight: bold; }
+        .sale { border: 1px solid #ccc; padding: 10px; margin: 5px 0; }
+        a { color: #0056b3; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <p><a href="{% url 'puzzlestore:catalog' %}">Назад к каталогу</a></p>
+
+    <div class="card">
+        <h1>{{ game.name }}</h1>
+
+        <p><span class="label">Издатель:</span> {{ game.publisher.name }}</p>
+        <p><span class="label">Возраст:</span> {{ game.age_limit.name }}</p>
+        <p><span class="label">Жанры:</span>
+            {% for genre in game.genres.all %}
+                {{ genre.name }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+        <p><span class="label">Цена:</span> {{ game.price }} ₽</p>
+        <p><span class="label">Остаток:</span> {{ game.current_stock }} шт.</p>
+        <p><span class="label">Рейтинг:</span> {{ game.rating_avg|default:"—" }}</p>
+
+        <h3>История продаж:</h3>
+        {% for sale in sales %}
+        <div class="sale">
+            <strong>{{ sale.sale_date|date:"d.m.Y H:i" }}</strong><br>
+            Количество: {{ sale.quantity }} шт.<br>
+            Сумма: {{ sale.unit_price|add:0 }} ₽<br>
+            {% if sale.user %}Покупатель: {{ sale.user.username }}{% else %}Гость{% endif %}
+        </div>
+        {% empty %}
+        <p>Продаж пока нет</p>
+        {% endfor %}
+    </div>
+</body>
+</html>
