@@ -106,3 +106,8 @@ def game_delete(request, pk):
     
     context = {'game': game}
     return render(request, 'puzzlestore/game_confirm_delete.html', context)
+
+
+def custom_404(request, exception):
+    messages.warning(request, 'Запрашиваемая страница не найдена')
+    return redirect('puzzlestore:catalog')
