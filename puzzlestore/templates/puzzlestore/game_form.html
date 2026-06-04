@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+        form { max-width: 600px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input[type="text"], input[type="number"], input[type="url"], 
+        input[type="file"], select, textarea {
+            width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 3px;
+            box-sizing: border-box;
+        }
+        textarea { resize: vertical; }
+        .checkbox-group { border: 1px solid #ccc; padding: 10px; border-radius: 3px; }
+        .checkbox-group label { display: inline; font-weight: normal; margin-right: 15px; }
+        .btn { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 16px; }
+        .btn:hover { background-color: #45a049; }
+        .btn-cancel { background-color: #ccc; margin-left: 10px; }
+        .errors { color: red; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <h1>{{ title }}</h1>
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+            
+            {% if field.name == 'genres' %}
+            <div class="checkbox-group">
+                {{ field }}
+            </div>
+            {% else %}
+            {{ field }}
+            {% endif %}
+            
+            {% if field.errors %}
+            <div class="errors">
+                {% for error in field.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        
+        <button type="submit" class="btn">Сохранить</button>
+        <a href="{% url 'puzzlestore:games_crud' %}" class="btn btn-cancel">Отмена</a>
+    </form>
+</body>
+</html>

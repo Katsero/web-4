@@ -1,13 +1,15 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count, Sum, Avg, F
+from django.contrib import messages
 from .models import BoardGame, Publisher, Genre, Sale
+from .forms import BoardGameForm
+from .decorators import admin_required
 
 def catalog_view(request):
     games = BoardGame.objects.available()
     games = games.exclude(genres__name='Для вечеринок')
     games = games.order_by('-created_at', 'name')
     games = games.annotate(total_sales=Count('sales'))
-    
     games = games.prefetch_related('genres', 'publisher')
     
     context = {'games': games}
@@ -56,3 +58,51 @@ def stats_view(request):
         'total_revenue': total_revenue,
     }
     return render(request, 'puzzlestore/stats.html', context)
+
+@admin_required
+def games_crud_view(request):
+    games = BoardGame.objects.all().select_related('publisher', 'age_limit')
+    context = {'games': games}
+    return render(request, 'puzzlestore/games.html', context)
+
+@admin_required
+def game_create(request):
+    if request.method == 'POST':
+        form = BoardGameForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Игра успешно добавлена')
+            return redirect('puzzlestore:games_crud')
+    else:
+        form = BoardGameForm()
+    
+    context = {'form': form, 'title': 'Добавить игру'}
+    return render(request, 'puzzlestore/game_form.html', context)
+
+@admin_required
+def game_update(request, pk):
+    game = get_object_or_404(BoardGame, pk=pk)
+    
+    if request.method == 'POST':
+        form = BoardGameForm(request.POST, request.FILES, instance=game)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Игра успешно обновлена')
+            return redirect('puzzlestore:games_crud')
+    else:
+        form = BoardGameForm(instance=game)
+    
+    context = {'form': form, 'title': f'Редактировать: {game.name}'}
+    return render(request, 'puzzlestore/game_form.html', context)
+
+@admin_required
+def game_delete(request, pk):
+    game = get_object_or_404(BoardGame, pk=pk)
+    
+    if request.method == 'POST':
+        game.delete()
+        messages.success(request, 'Игра успешно удалена')
+        return redirect('puzzlestore:games_crud')
+    
+    context = {'game': game}
+    return render(request, 'puzzlestore/game_confirm_delete.html', context)

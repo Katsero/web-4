@@ -102,7 +102,7 @@ class Profile(models.Model):
         verbose_name="Телефон"
     )
     avatar = models.ImageField(
-        upload_to='avatars/%Y/%m/%d/',
+        upload_to='avatars/',
         blank=True,
         null=True,
         verbose_name="Аватар"
@@ -126,6 +126,11 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"Профиль {self.user.username}"
+    
+    def is_admin(self):
+        if self.user.is_superuser:
+            return True
+        return self.role.name == 'Администратор'
     
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -154,13 +159,13 @@ class BoardGame(models.Model):
         verbose_name="Название игры"
     )
     image = models.ImageField(
-        upload_to='games/%Y/%m/%d/',
+        upload_to='games/',
         blank=True,
         null=True,
         verbose_name="Изображение"
     )
     rules_file = models.FileField(
-        upload_to='rules/%Y/%m/%d/',
+        upload_to='rules/',
         blank=True,
         null=True,
         verbose_name="Правила (PDF)"

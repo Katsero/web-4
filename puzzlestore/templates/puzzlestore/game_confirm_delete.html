@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Удаление игры</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+        .warning { background-color: #fff3cd; border: 1px solid #ffc107; padding: 20px; border-radius: 5px; max-width: 600px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 3px; cursor: pointer; font-size: 16px; margin-right: 10px; }
+        .btn-delete { background-color: #f44336; color: white; }
+        .btn-cancel { background-color: #ccc; color: black; }
+    </style>
+</head>
+<body>
+    <h1>Удаление игры</h1>
+    
+    <div class="warning">
+        <p><strong>Вы уверены, что хотите удалить игру "{{ game.name }}"?</strong></p>
+        <p>Это действие нельзя отменить.</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-delete">Да, удалить</button>
+            <a href="{% url 'puzzlestore:games_crud' %}" class="btn btn-cancel">Отмена</a>
+        </form>
+    </div>
+</body>
+</html>

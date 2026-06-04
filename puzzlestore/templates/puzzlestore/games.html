@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Управление играми</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #eee; }
+        a { color: #0056b3; text-decoration: none; margin-right: 10px; }
+        a:hover { text-decoration: underline; }
+        .btn { padding: 5px 10px; border: 1px solid #ccc; border-radius: 3px; }
+        .btn-edit { background-color: #4CAF50; color: white; }
+        .btn-delete { background-color: #f44336; color: white; }
+        .btn-add { background-color: #2196F3; color: white; padding: 10px 20px; font-size: 16px; }
+        .messages { margin-bottom: 20px; }
+        .message { padding: 10px; background-color: #4CAF50; color: white; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Управление играми</h1>
+    
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="message">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <p><a href="{% url 'puzzlestore:game_create' %}" class="btn btn-add">+ Добавить игру</a></p>
+    
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Название</th>
+            <th>Издатель</th>
+            <th>Цена</th>
+            <th>Остаток</th>
+            <th>Действия</th>
+        </tr>
+        {% for game in games %}
+        <tr>
+            <td>{{ game.id }}</td>
+            <td><a href="{{ game.get_absolute_url }}">{{ game.name }}</a></td>
+            <td>{{ game.publisher.name }}</td>
+            <td>{{ game.price }} ₽</td>
+            <td>{{ game.current_stock }}</td>
+            <td>
+                <a href="{% url 'puzzlestore:game_update' game.id %}" class="btn btn-edit">Изменить</a>
+                <a href="{% url 'puzzlestore:game_delete' game.id %}" class="btn btn-delete">Удалить</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">Игр нет</td></tr>
+        {% endfor %}
+    </table>
+    
+    <p><a href="{% url 'puzzlestore:catalog' %}">← Назад к каталогу</a></p>
+</body>
+</html>
