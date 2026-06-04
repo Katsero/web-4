@@ -9,12 +9,45 @@
         .sale { border: 1px solid #ccc; padding: 10px; margin: 5px 0; }
         a { color: #0056b3; text-decoration: none; }
         a:hover { text-decoration: underline; }
+        
+        .btn-print {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .btn-print:hover { background-color: #d32f2f; }
+
+        /* ===== СТИЛИ ДЛЯ ПЕЧАТИ (PDF) ===== */
+        @media print {
+            body { margin: 0; font-size: 11pt; }
+            .no-print { display: none !important; }
+            .card { border: none; max-width: 100%; padding: 0; }
+            .sale { page-break-inside: avoid; }
+            h1 { color: #000; border-bottom: 2px solid #000; }
+            h3 { color: #333; }
+            a { color: #000; text-decoration: none; }
+            
+            @page {
+                size: A4;
+                margin: 2cm;
+            }
+        }
     </style>
 </head>
 <body>
-    <p><a href="{% url 'puzzlestore:catalog' %}">Назад к каталогу</a></p>
+    <p class="no-print"><a href="{% url 'puzzlestore:catalog' %}">Назад к каталогу</a></p>
 
     <div class="card">
+        <!-- Кнопка печати/сохранения в PDF -->
+        <button class="btn-print no-print" onclick="window.print()">
+            Сохранить в PDF
+        </button>
+        
         <h1>{{ game.name }}</h1>
 
         <p><span class="label">Издатель:</span> {{ game.publisher.name }}</p>
@@ -24,7 +57,7 @@
                 {{ genre.name }}{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </p>
-        <p><span class="label">Цена:</span> {{ game.price }} ₽</p>
+        <p><span class="label">Цена:</span> {{ game.price }} руб.</p>
         <p><span class="label">Остаток:</span> {{ game.current_stock }} шт.</p>
         <p><span class="label">Рейтинг:</span> {{ game.rating_avg|default:"—" }}</p>
 
@@ -33,7 +66,7 @@
         <div class="sale">
             <strong>{{ sale.sale_date|date:"d.m.Y H:i" }}</strong><br>
             Количество: {{ sale.quantity }} шт.<br>
-            Сумма: {{ sale.unit_price|add:0 }} ₽<br>
+            Сумма: {{ sale.unit_price|add:0 }} руб.<br>
             {% if sale.user %}Покупатель: {{ sale.user.username }}{% else %}Гость{% endif %}
         </div>
         {% empty %}

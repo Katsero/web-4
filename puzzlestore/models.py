@@ -5,6 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from datetime import timedelta
+from django.core.validators import FileExtensionValidator
 
 class Role(models.Model):
     name = models.CharField(
@@ -168,7 +169,13 @@ class BoardGame(models.Model):
         upload_to='rules/',
         blank=True,
         null=True,
-        verbose_name="Правила (PDF)"
+        verbose_name="Правила (PDF)",
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=['pdf'],
+                message='Файл правил должен быть в формате PDF'
+            )
+        ]
     )
     description = models.TextField(
         blank=True,
