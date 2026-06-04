@@ -8,30 +8,43 @@ def catalog_view(request):
     games = games.order_by('-created_at', 'name')
     games = games.annotate(total_sales=Count('sales'))
     
+    games = games.prefetch_related('genres', 'publisher')
+    
     context = {'games': games}
     return render(request, 'puzzlestore/catalog.html', context)
 
 def game_detail(request, pk):
-    game = get_object_or_404(BoardGame, pk=pk)
-    sales = game.sales.all()
-    publisher_name = game.publisher.name
+    game = get_object_or_404(
+        BoardGame.objects.select_related('publisher', 'age_limit'),
+        pk=pk
+    )
+    
+    sales = game.sales.select_related('user').all()
+    creators = game.creators.all()
+    genres = game.genres.all()
     
     context = {
         'game': game,
         'sales': sales,
-        'publisher_name': publisher_name,
+        'creators': creators,
+        'genres': genres,
     }
     return render(request, 'puzzlestore/game_detail.html', context)
 
 def stats_view(request):
-    publishers = Publisher.objects.annotate(games_count=Count('board_games')).order_by('-games_count')
-    games_revenue = BoardGame.objects.annotate(
+    publishers = Publisher.objects.annotate(
+        games_count=Count('board_games')
+    ).order_by('-games_count').prefetch_related('board_games')
+    
+    games_revenue = BoardGame.objects.select_related('publisher').annotate(
         revenue=Sum(F('sales__quantity') * F('sales__unit_price'))
     ).filter(revenue__isnull=False).order_by('-revenue')
+    
     genre_stats = Genre.objects.annotate(
         avg_price=Avg('board_games__price'),
         games_count=Count('board_games')
-    ).filter(games_count__gt=0)
+    ).filter(games_count__gt=0).prefetch_related('board_games')
+    
     total_revenue = Sale.objects.aggregate(
         total=Sum(F('quantity') * F('unit_price'))
     )['total']

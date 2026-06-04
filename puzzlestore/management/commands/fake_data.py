@@ -1,6 +1,7 @@
 import random
 from django.core.management.base import BaseCommand
 from django.db import transaction
+from django.utils import timezone
 from faker import Faker
 from puzzlestore.models import (
     BoardGame, Genre, Publisher, Creator, AgeLimit, User,
@@ -28,9 +29,8 @@ class Command(BaseCommand):
             return
 
         existing_users = list(User.objects.all())
-        needed_users = max(0, options['users'] - len(existing_users))
         new_users = []
-        for _ in range(needed_users):
+        for _ in range(options['users']):
             new_users.append(User.objects.create_user(
                 username=fake.user_name(),
                 email=fake.email(),
@@ -44,25 +44,21 @@ class Command(BaseCommand):
             'Экивоки', 'Взрывные котята', 'Тик так бумм', 'Свинтус',
             'Дженга', 'Эрудит', 'Башня', 'Мафия', 'Бункер', 'Техас',
             'Соображарий', 'Холм', 'Берсерк', 'Гвинт', 'Ведьмак',
-            '7 чудес', 'Имаджинариум', 'Диксит', 'Активити', 'Крокодил',
-            'Элиас', 'Скажи иначе', 'Время Валеры', 'Зомби в доме',
-            'Подземелье', 'Драконья гавань', 'Мачу-Пикчу', 'Терраформирование',
-            'Гага', 'Барабашка', 'Доббль', 'Халифат', 'Цитадели',
-            'Санкт-Петербург', 'Пуэрто-Рико', 'Агрикола', 'Каверна',
-            'Ужас Аркхэма', 'Зов Ктулху', 'Немезис', 'Сквозь века'
+            '7 чудес', 'Диксит', 'Активити', 'Крокодил',
+            'Элиас', 'Время Валеры', 'Зомби в доме',
+            'Подземелье', 'Драконья гавань', 'Терраформирование',
+            'Барабашка', 'Доббль', 'Цитадели',
+            'Санкт-Петербург', 'Пуэрто-Рико', 'Агрикола',
+            'Ужас Аркхэма', 'Немезис', 'Сквозь века'
         ]
 
         games = []
-        used_names = set()
-
         for i in range(options['games']):
             if i < len(game_names):
                 name = game_names[i]
             else:
                 name = f"{fake.word().title()} {fake.word().title()} {i}"
-            
-            used_names.add(name)
-            
+
             game = BoardGame.objects.create(
                 name=name,
                 image_url=f"https://picsum.photos/seed/{i}/400/400",
@@ -72,11 +68,14 @@ class Command(BaseCommand):
                 age_limit=random.choice(age_limits),
                 current_stock=random.randint(0, 60),
                 rating_avg=round(random.uniform(3.5, 5.0), 1) if random.random() > 0.2 else None,
-                created_at=fake.date_time_between(start_date='-2y', end_date='now')
+                created_at=timezone.make_aware(fake.date_time_between(start_date='-2y', end_date='now'))
             )
-            game.genres.set(random.sample(genres, k=random.randint(1, 3)))
 
-            selected_creators = random.sample(creators, k=random.randint(1, 2))
+            k_genres = min(random.randint(1, 3), len(genres))
+            game.genres.set(random.sample(genres, k=k_genres))
+
+            k_creators = min(random.randint(1, 2), len(creators))
+            selected_creators = random.sample(creators, k=k_creators)
             for cr in selected_creators:
                 BoardGameCreator.objects.create(game=game, creator=cr)
 
@@ -96,23 +95,25 @@ class Command(BaseCommand):
                     game=game,
                     quantity=random.randint(1, 4),
                     unit_price=game.price,
-                    sale_date=fake.date_time_between(start_date='-6m', end_date='now'),
-                    user=random.choice(all_users) if random.random() > 0.4 else None
+                    sale_date=timezone.make_aware(fake.date_time_between(start_date='-6m', end_date='now')),
+                    user=random.choice(all_users) if random.random() > 0.4 and all_users else None
                 )
 
         active_users = all_users[:min(5, len(all_users))]
         for user in active_users:
-            cart_games = random.sample(games, k=random.randint(1, 3))
-            for g in cart_games:
-                Cart.objects.create(user=user, game=g, quantity=random.randint(1, 2))
+            k_cart = min(random.randint(1, 3), len(games))
+            if k_cart > 0:
+                cart_games = random.sample(games, k=k_cart)
+                for g in cart_games:
+                    Cart.objects.create(user=user, game=g, quantity=random.randint(1, 2))
 
-            remaining_games = [g for g in games if g not in cart_games]
-            if remaining_games:
-                wish_games = random.sample(remaining_games, k=random.randint(1, 2))
-                for g in wish_games:
-                    Wishlist.objects.create(user=user, game=g)
+                remaining_games = [g for g in games if g not in cart_games]
+                if remaining_games:
+                    k_wish = min(random.randint(1, 2), len(remaining_games))
+                    wish_games = random.sample(remaining_games, k=k_wish)
+                    for g in wish_games:
+                        Wishlist.objects.create(user=user, game=g)
 
         self.stdout.write(self.style.SUCCESS(
-            f'Successfully generated: {len(games)} games, {len(new_users)} users, '
-            f'supplies, sales, carts and wishlists.'
+            f'Successfully generated: {len(games)} games, {len(new_users)} new users, supplies, sales, carts and wishlists.'
         ))

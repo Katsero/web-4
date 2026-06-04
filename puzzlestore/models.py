@@ -184,6 +184,13 @@ class BoardGame(models.Model):
         verbose_name="Жанры",
         related_name='board_games'
     )
+    creators = models.ManyToManyField(
+        Creator,
+        through='BoardGameCreator',
+        through_fields=('game', 'creator'),
+        verbose_name="Создатели",
+        related_name='board_games'
+    )
     current_stock = models.PositiveIntegerField(
         default=0,
         verbose_name="Текущий остаток на складе"
@@ -232,13 +239,13 @@ class BoardGameCreator(models.Model):
     game = models.ForeignKey(
         BoardGame,
         on_delete=models.CASCADE,
-        related_name='creators',
+        related_name='creator_links',
         verbose_name="Игра"
     )
     creator = models.ForeignKey(
         Creator,
         on_delete=models.CASCADE,
-        related_name='games',
+        related_name='game_links',
         verbose_name="Создатель"
     )
 

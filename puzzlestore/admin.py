@@ -64,21 +64,6 @@ class CreatorAdmin(admin.ModelAdmin):
     search_fields = ('name', 'role')
     list_filter = ('role',)
 
-## старое
-# @admin.register(User)
-# class UserAdmin(admin.ModelAdmin):
-#     list_display = ('id', 'username', 'email', 'phone', 'get_role_display', 'created_at')
-#     list_display_links = ('username',)
-#     list_filter = ('role', 'created_at')
-#     search_fields = ('username', 'email', 'phone')
-#     date_hierarchy = 'created_at'
-#     readonly_fields = ('created_at',)
-
-#     @admin.display(description='Роль', ordering='role__name')
-#     def get_role_display(self, obj):
-#         return obj.role.name
-#     get_role_display.short_description = 'Роль'
-
 @admin.register(BoardGame)
 class BoardGameAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'publisher', 'price', 'current_stock', 'get_rating_status', 'created_at')
@@ -116,7 +101,7 @@ class SupplyAdmin(admin.ModelAdmin):
     @admin.display(description='Общая стоимость')
     def get_total_cost(self, obj):
         return f"{obj.quantity * obj.unit_cost} ₽" if obj.unit_cost else "—"
-        get_total_cost.short_description = 'Сумма'
+    get_total_cost.short_description = 'Сумма'
 
 @admin.register(Sale)
 class SaleAdmin(admin.ModelAdmin):
