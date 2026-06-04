@@ -124,6 +124,21 @@ def search_view(request):
     games_in_stock_count = BoardGame.objects.filter(current_stock__gt=0).count()
     has_out_of_stock_games = BoardGame.objects.filter(current_stock=0).exists()
     
+    update_message = ""
+    delete_message = ""
+    
+    if request.method == 'POST':
+        if 'action_update' in request.POST:
+            count = Sale.objects.filter(status='new').update(status='paid')
+            update_message = f"Метод update() сработал. Обновлено записей: {count}"
+            
+        elif 'action_delete' in request.POST:
+            count, _ = Sale.objects.filter(status='cancelled').delete()
+            delete_message = f"Метод delete() сработал. Удалено записей: {count}"
+
+    new_sales_count = Sale.objects.filter(status='new').count()
+    cancelled_sales_count = Sale.objects.filter(status='cancelled').count()
+    
     context = {
         'query': query,
         'results_icontains': results_icontains,
@@ -133,6 +148,10 @@ def search_view(request):
         'game_prices_list': game_prices_list,
         'games_in_stock_count': games_in_stock_count,
         'has_out_of_stock_games': has_out_of_stock_games,
+        'new_sales_count': new_sales_count,
+        'cancelled_sales_count': cancelled_sales_count,
+        'update_message': update_message,
+        'delete_message': delete_message,
     }
     return render(request, 'puzzlestore/search.html', context)
 

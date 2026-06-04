@@ -12,7 +12,8 @@
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
         th { background-color: #eee; }
-        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; font-family: monospace; }
+        code { background: #f4f4f4; padding: 2px 5px; font-family: monospace; }
         a { color: #0056b3; text-decoration: none; }
         .status-yes { color: #d32f2f; font-weight: bold; }
         .status-no { color: #388e3c; font-weight: bold; }
@@ -114,6 +115,38 @@
                 <span class="status-no">Нет, всё в наличии</span>
             {% endif %}
         </p>
+    </div>
+
+    <div class="section">
+        <h2>update() — Массовое обновление</h2>
+        <p>Обновляет все записи одним SQL-запросом. Не вызывает save() и сигналы.</p>
+        <p>Продаж со статусом "Новый" сейчас: <b>{{ new_sales_count }}</b></p>
+        
+        {% if update_message %}
+            <p style="color: green; font-weight: bold;">{{ update_message }}</p>
+            <p>Продаж со статусом "Новый" после клика: <b>{{ new_sales_count }}</b></p>
+        {% endif %}
+
+        <form method="post" style="margin-top: 10px;">
+            {% csrf_token %}
+            <button type="submit" name="action_update" value="1">Вызвать update() (Новые -> Оплачено)</button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>delete() — Массовое удаление</h2>
+        <p>Удаляет все записи одним SQL-запросом. Соблюдает on_delete и вызывает сигналы.</p>
+        <p>Продаж со статусом "Отменён" сейчас: <b>{{ cancelled_sales_count }}</b></p>
+        
+        {% if delete_message %}
+            <p style="color: red; font-weight: bold;">{{ delete_message }}</p>
+            <p>Продаж со статусом "Отменён" после клика: <b>{{ cancelled_sales_count }}</b></p>
+        {% endif %}
+
+        <form method="post" style="margin-top: 10px;">
+            {% csrf_token %}
+            <button type="submit" name="action_delete" value="1">Вызвать delete() (Удалить отменённые)</button>
+        </form>
     </div>
 
     <p><a href="{% url 'puzzlestore:catalog' %}">Назад к каталогу</a></p>
