@@ -45,6 +45,11 @@ class Publisher(models.Model):
         unique=True,
         verbose_name="Название издателя"
     )
+    website = models.URLField(
+        blank=True,
+        null=True,
+        verbose_name="Сайт издателя"
+    )
 
     class Meta:
         verbose_name = "Издатель"

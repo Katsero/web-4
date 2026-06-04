@@ -7,4 +7,6 @@ python manage.py createsuperuser
     Kat
     1234
 python manage.py runserver
-pip install -r requirements.txt 
+pip install -r requirements.txt
+pip freeze | Out-File -Encoding utf8 requirements.txt
+    если кодировка шакалит

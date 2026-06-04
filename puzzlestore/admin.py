@@ -49,9 +49,9 @@ class AgeLimitAdmin(admin.ModelAdmin):
 
 @admin.register(Publisher)
 class PublisherAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
+    list_display = ('id', 'name', 'website',)
     list_display_links = ('name',)
-    search_fields = ('name',)
+    search_fields = ('name', 'website',)
 
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
