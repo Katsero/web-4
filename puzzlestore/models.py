@@ -101,10 +101,11 @@ class Profile(models.Model):
         null=True,
         verbose_name="Телефон"
     )
-    avatar_url = models.URLField(
+    avatar = models.ImageField(
+        upload_to='avatars/%Y/%m/%d/',
         blank=True,
         null=True,
-        verbose_name="Ссылка на аватар"
+        verbose_name="Аватар"
     )
     role = models.ForeignKey(
         Role,
@@ -152,10 +153,17 @@ class BoardGame(models.Model):
         max_length=255,
         verbose_name="Название игры"
     )
-    image_url = models.URLField(
+    image = models.ImageField(
+        upload_to='games/%Y/%m/%d/',
         blank=True,
         null=True,
-        verbose_name="Ссылка на изображение"
+        verbose_name="Изображение"
+    )
+    rules_file = models.FileField(
+        upload_to='rules/%Y/%m/%d/',
+        blank=True,
+        null=True,
+        verbose_name="Правила (PDF)"
     )
     description = models.TextField(
         blank=True,
