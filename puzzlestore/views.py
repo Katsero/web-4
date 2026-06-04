@@ -121,6 +121,9 @@ def search_view(request):
     game_names_flat = BoardGame.objects.values_list('name', flat=True)[:10]
     game_prices_list = BoardGame.objects.values_list('name', 'price')[:10]
     
+    games_in_stock_count = BoardGame.objects.filter(current_stock__gt=0).count()
+    has_out_of_stock_games = BoardGame.objects.filter(current_stock=0).exists()
+    
     context = {
         'query': query,
         'results_icontains': results_icontains,
@@ -128,6 +131,8 @@ def search_view(request):
         'publishers_values': publishers_values,
         'game_names_flat': game_names_flat,
         'game_prices_list': game_prices_list,
+        'games_in_stock_count': games_in_stock_count,
+        'has_out_of_stock_games': has_out_of_stock_games,
     }
     return render(request, 'puzzlestore/search.html', context)
 
