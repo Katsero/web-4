@@ -107,6 +107,29 @@ def game_delete(request, pk):
     context = {'game': game}
     return render(request, 'puzzlestore/game_confirm_delete.html', context)
 
+def search_view(request):
+    query = request.GET.get('q', '')
+    
+    results_icontains = []
+    results_contains = []
+    
+    if query:
+        results_icontains = BoardGame.objects.filter(name__icontains=query)
+        results_contains = BoardGame.objects.filter(name__contains=query)
+    
+    publishers_values = Publisher.objects.values('id', 'name', 'website')
+    game_names_flat = BoardGame.objects.values_list('name', flat=True)[:10]
+    game_prices_list = BoardGame.objects.values_list('name', 'price')[:10]
+    
+    context = {
+        'query': query,
+        'results_icontains': results_icontains,
+        'results_contains': results_contains,
+        'publishers_values': publishers_values,
+        'game_names_flat': game_names_flat,
+        'game_prices_list': game_prices_list,
+    }
+    return render(request, 'puzzlestore/search.html', context)
 
 def custom_404(request, exception):
     messages.warning(request, 'Запрашиваемая страница не найдена')
