@@ -1,9 +1,39 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count, Sum, Avg, F
 from django.contrib import messages
+from django.utils import timezone
+from datetime import timedelta
 from .models import BoardGame, Publisher, Genre, Sale
 from .forms import BoardGameForm
 from .decorators import admin_required
+
+def home_view(request):
+    """Главная страница с тремя виджетами"""
+    
+    # ===== ВИДЖЕТ 1: БЛОГ (последние добавленные игры) =====
+    # QuerySet: order_by() - сортировка по дате создания
+    latest_games = BoardGame.objects.order_by('-created_at')[:5]
+    
+    # ===== ВИДЖЕТ 2: ПОПУЛЯРНЫЕ ИГРЫ (топ по продажам) =====
+    # QuerySet: annotate() + COUNT - агрегатная функция подсчёта продаж
+    popular_games = BoardGame.objects.annotate(
+        sales_count=Count('sales')
+    ).filter(
+        sales_count__gt=0
+    ).order_by('-sales_count')[:4]
+    
+    # ===== ВИДЖЕТ 3: АКЦИИ (игры дешевле 2000₽) =====
+    # QuerySet: filter() - фильтрация по цене
+    sale_games = BoardGame.objects.filter(
+        price__lt=2000
+    ).order_by('price')[:3]
+    
+    context = {
+        'latest_games': latest_games,      # Для виджета "Блог"
+        'popular_games': popular_games,    # Для виджета "Популярные игры"
+        'sale_games': sale_games,          # Для виджета "Акции"
+    }
+    return render(request, 'puzzlestore/home.html', context)
 
 def catalog_view(request):
     games = BoardGame.objects.available()
@@ -107,6 +137,30 @@ def game_delete(request, pk):
     context = {'game': game}
     return render(request, 'puzzlestore/game_confirm_delete.html', context)
 
+@admin_required
+def bulk_update_sales(request):
+    """Массовое обновление: помечаем все 'new' продажи как 'paid'"""
+    if request.method == 'POST':
+        updated_count = Sale.objects.filter(status='new').update(status='paid')
+        messages.success(request, f'Обновлено продаж: {updated_count}')
+        return redirect('puzzlestore:search')
+    
+    new_sales_count = Sale.objects.filter(status='new').count()
+    context = {'new_sales_count': new_sales_count}
+    return render(request, 'puzzlestore/bulk_update_confirm.html', context)
+
+@admin_required
+def bulk_delete_sales(request):
+    """Массовое удаление: удаляем все 'cancelled' продажи"""
+    if request.method == 'POST':
+        deleted_count, deleted_info = Sale.objects.filter(status='cancelled').delete()
+        messages.success(request, f'Удалено продаж: {deleted_count}')
+        return redirect('puzzlestore:search')
+    
+    cancelled_sales_count = Sale.objects.filter(status='cancelled').count()
+    context = {'cancelled_sales_count': cancelled_sales_count}
+    return render(request, 'puzzlestore/bulk_delete_confirm.html', context)
+
 def search_view(request):
     query = request.GET.get('q', '')
     
@@ -129,8 +183,8 @@ def search_view(request):
     
     if request.method == 'POST':
         if 'action_update' in request.POST:
-            count = Sale.objects.filter(status='new').update(status='paid')
-            update_message = f"Метод update() сработал. Обновлено записей: {count}"
+            count = BoardGame.objects.all().update(price=F('price') * 1.05)
+            update_message = f"Метод update() сработал. Обновлено цен у {count} игр (+5%)"
             
         elif 'action_delete' in request.POST:
             count, _ = Sale.objects.filter(status='cancelled').delete()
@@ -139,6 +193,8 @@ def search_view(request):
     new_sales_count = Sale.objects.filter(status='new').count()
     cancelled_sales_count = Sale.objects.filter(status='cancelled').count()
     
+    game_prices_list_updated = BoardGame.objects.values_list('name', 'price')[:10]
+    
     context = {
         'query': query,
         'results_icontains': results_icontains,
@@ -146,6 +202,7 @@ def search_view(request):
         'publishers_values': publishers_values,
         'game_names_flat': game_names_flat,
         'game_prices_list': game_prices_list,
+        'game_prices_list_updated': game_prices_list_updated,
         'games_in_stock_count': games_in_stock_count,
         'has_out_of_stock_games': has_out_of_stock_games,
         'new_sales_count': new_sales_count,
