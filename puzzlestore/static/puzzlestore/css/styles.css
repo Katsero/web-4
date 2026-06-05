@@ -435,7 +435,6 @@ body {
     font-family: var(--font-main-family);
     padding: 3rem;
     border-radius: 1.6rem;
-    line-height: 1.4;
     flex-grow: 1;
 }
 
@@ -498,7 +497,6 @@ body {
 .delivery__text {
     font-size: 4rem;
     font-family: var(--font-main-family);
-    line-height: 1.4;
 }
 
 .delivery__cta {
@@ -526,6 +524,65 @@ body {
     object-fit: cover;
     border-radius: 2.4rem;
     border: 0.3rem solid var(--color-text--dark);
+}
+.sales {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sales__title {
+    align-self: start;
+}
+
+.sales__container {
+    display: flex;
+    gap: 2rem;
+    max-width: 160rem;
+    width: 100%;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.sales__card {
+    flex: 1;
+    background-color: var(--color-main);
+    border-radius: 2.4rem;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.sales__image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 1.6rem;
+}
+
+.sales__content {
+    padding: 2rem 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem; 
+    flex-grow: 1;
+}
+
+.sales__card-title {
+    font-size: 4rem;
+    font-family: var(--font-main-family);
+    font-weight: 400;
+    text-align: left;
+    margin: 0;
+}
+
+.sales__link {
+    display: block;
+    font-size: 4rem;
+    font-family: var(--font-title-family);
+    padding: 1.5rem 0;
+    border-radius: 2.4rem;
+    text-align: center;
 }
 
 
