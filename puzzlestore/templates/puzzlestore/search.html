@@ -32,15 +32,22 @@
         <h2>Поиск с __icontains (без учёта регистра)</h2>
         <p>Найдено игр: <b>{{ results_icontains|length }}</b></p>
         <table>
-            <tr><th>ID</th><th>Название</th><th>Издатель</th></tr>
+            <tr><th>ID</th><th>Название</th><th>Издатель</th><th>Цена</th></tr>
             {% for game in results_icontains %}
             <tr>
                 <td>{{ game.id }}</td>
-                <td>{{ game.name }}</td>
-                <td>{{ game.publisher.name }}</td>
+                <td><a href="{% url 'puzzlestore:game_detail' game.id %}">{{ game.name }}</a></td>
+                <td>
+                    {% if game.publisher.website %}
+                        <a href="{{ game.publisher.website }}" target="_blank">{{ game.publisher.name }}</a>
+                    {% else %}
+                        {{ game.publisher.name }}
+                    {% endif %}
+                </td>
+                <td>{{ game.price }} руб.</td>
             </tr>
             {% empty %}
-            <tr><td colspan="3">Ничего не найдено</td></tr>
+            <tr><td colspan="4">Ничего не найдено</td></tr>
             {% endfor %}
         </table>
     </div>
@@ -49,15 +56,22 @@
         <h2>Поиск с __contains (с учётом регистра)</h2>
         <p>Найдено игр: <b>{{ results_contains|length }}</b></p>
         <table>
-            <tr><th>ID</th><th>Название</th><th>Издатель</th></tr>
+            <tr><th>ID</th><th>Название</th><th>Издатель</th><th>Цена</th></tr>
             {% for game in results_contains %}
             <tr>
                 <td>{{ game.id }}</td>
-                <td>{{ game.name }}</td>
-                <td>{{ game.publisher.name }}</td>
+                <td><a href="{% url 'puzzlestore:game_detail' game.id %}">{{ game.name }}</a></td>
+                <td>
+                    {% if game.publisher.website %}
+                        <a href="{{ game.publisher.website }}" target="_blank">{{ game.publisher.name }}</a>
+                    {% else %}
+                        {{ game.publisher.name }}
+                    {% endif %}
+                </td>
+                <td>{{ game.price }} руб.</td>
             </tr>
             {% empty %}
-            <tr><td colspan="3">Ничего не найдено</td></tr>
+            <tr><td colspan="4">Ничего не найдено</td></tr>
             {% endfor %}
         </table>
     </div>

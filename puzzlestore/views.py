@@ -8,30 +8,22 @@ from .forms import BoardGameForm
 from .decorators import admin_required
 
 def home_view(request):
-    """Главная страница с тремя виджетами"""
-    
-    # ===== ВИДЖЕТ 1: БЛОГ (последние добавленные игры) =====
-    # QuerySet: order_by() - сортировка по дате создания
     latest_games = BoardGame.objects.order_by('-created_at')[:5]
     
-    # ===== ВИДЖЕТ 2: ПОПУЛЯРНЫЕ ИГРЫ (топ по продажам) =====
-    # QuerySet: annotate() + COUNT - агрегатная функция подсчёта продаж
     popular_games = BoardGame.objects.annotate(
         sales_count=Count('sales')
     ).filter(
         sales_count__gt=0
     ).order_by('-sales_count')[:4]
     
-    # ===== ВИДЖЕТ 3: АКЦИИ (игры дешевле 2000₽) =====
-    # QuerySet: filter() - фильтрация по цене
     sale_games = BoardGame.objects.filter(
         price__lt=2000
     ).order_by('price')[:3]
     
     context = {
-        'latest_games': latest_games,      # Для виджета "Блог"
-        'popular_games': popular_games,    # Для виджета "Популярные игры"
-        'sale_games': sale_games,          # Для виджета "Акции"
+        'latest_games': latest_games,
+        'popular_games': popular_games,
+        'sale_games': sale_games,
     }
     return render(request, 'puzzlestore/home.html', context)
 
