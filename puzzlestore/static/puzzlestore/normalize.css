@@ -1,0 +1,81 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+li::marker {
+  content: none !important;
+}
+
+/* Убираем стандартные отступы у текстовых элементов */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+li,
+dl,
+dt,
+dd,
+blockquote,
+figure,
+pre {
+  margin: 0;
+  padding: 0;
+}
+
+/* Сбрасываем стили списков */
+ul,
+ol {
+  list-style: none;
+}
+
+/* Убираем подчёркивание у ссылок */
+a {
+  text-decoration: none;
+  color: inherit; /* Наследует цвет текста */
+}
+
+/* Обнуляем стили кнопок и инпутов */
+button,
+input,
+textarea,
+select {
+  background: none;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  padding: 0;
+  margin: 0;
+}
+
+/* Блоки по умолчанию не имеют внешних отступов */
+div,
+span,
+section,
+article,
+header,
+footer,
+nav,
+main {
+  margin: 0;
+  padding: 0;
+}
+
+/* Таблицы тоже */
+table,
+th,
+td {
+  border-collapse: collapse;
+  padding: 0;
+  margin: 0;
+}
