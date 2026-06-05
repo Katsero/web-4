@@ -16,6 +16,7 @@
         </div>
         <div class="header__search">
             <input type="text" placeholder="Поиск">
+            <!-- TODO лупу кнопку -->
             <!-- <button type="button"></button> -->
         </div>
         <a href="#" class="header__link header__auth">Вход/регистрация</a>
@@ -85,7 +86,39 @@
 
         <section class="about">
             <h2 class="about__title h2">О нас</h2>
-            <div class="about__wrapper"></div>
+            <p class="about__description">
+                Puzzle store - не просто магазин головоломок, это место, где сбываются <span class="underscored">детские мечты</span>. 
+                Целые миры доступны для исследования и весёлого времяпрепровождения
+            </p>
+            
+            <div class="about__slider">
+                <button class="about__arrow about__arrow--left" type="button"></button>
+                
+                <div class="about__slides">
+                    <div class="about__slide about__slide--side about__slide--left">
+                        <img src="../../static/puzzlestore/images/shop.png" alt="Магазин" class="about__image">
+                    </div>
+                    <div class="about__slide about__slide--active">
+                        <img src="../../static/puzzlestore/images/shop.png" alt="Магазин" class="about__image">
+                        <div class="about__card-bottom">
+                            <a href="#" class="about__map-btn link-cta">Карта</a>
+                        </div>
+                    </div>
+                    <div class="about__slide about__slide--side about__slide--right">
+                        <img src="../../static/puzzlestore/images/shop.png" alt="Магазин" class="about__image">
+                    </div>
+                </div>
+                
+                <button class="about__arrow about__arrow--right" type="button"></button>
+            </div>
+            
+            <div class="about__dots">
+                <span class="about__dot"></span>
+                <span class="about__dot"></span>
+                <span class="about__dot about__dot--active"></span>
+                <span class="about__dot"></span>
+                <span class="about__dot"></span>
+            </div>
         </section>
 
         <section class="reviews">
