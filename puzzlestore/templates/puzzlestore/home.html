@@ -1,352 +1,202 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PuzzleStore - Главная</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'puzzlestore/css/normalize.css' %}">
-    <link rel="stylesheet" href="{% static 'puzzlestore/css/styles.css' %}">
-</head>
-<body>
-<header class="header">
-    <div class="header__grid">
-        <div class="header__logo">
-            <img src="{% static 'puzzlestore/images/logo.png' %}" alt="CubeIcon">
-            <span class="text--logo">PUZZLESTORE</span>
-        </div>
-        <form action="{% url 'puzzlestore:search' %}" method="get" class="header__search">
-            <input type="text" name="q" placeholder="Поиск" value="{{ request.GET.q }}">
-        </form>
-        <a href="#" class="header__link header__auth">Вход/регистрация</a>
-        
-        <a href="{% url 'puzzlestore:catalog' %}" class="header__link">Каталог</a>
-        <a href="#" class="header__link link-cta">Новинки</a>
-        <a href="#" class="header__link">Блог</a>
-        <a href="#" class="header__link">Поддержка</a>
-        <a href="#" class="header__link">О нас</a>
-        <a href="#" class="header__link">Корзина</a>
-    </div>
-</header>
+{% extends 'puzzlestore/base.html' %}
+{% load static %}
 
+{% block title %}PuzzleStore - Главная{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'puzzlestore/css/home.css' %}">
+{% endblock %}
+
+{% block content %}
     <div class="breadcrumbs"></div>
     <h1 class="hidden">PuzzleStore</h1>
-    
-    <main>
-        <section class="blog">
-            <h2 class="blog__title h2">БЛОГ</h2>
-            <div class="blog__container">
-                <div class="blog__content-left">
-                    {% if latest_games %}
-                    <h3 class="blog__block-title">Последнее добавление: {{ latest_games.0.name }}</h3>
-                    <p class="blog__block-text">
-                        Новинка магазина — <span class="underscored">{{ latest_games.0.name }}</span>! 
-                        {{ latest_games.0.description|truncatewords:20 }}
-                    </p>
-                    {% else %}
-                    <h3 class="blog__block-title">Скоро новые поступления</h3>
-                    <p class="blog__block-text">Следите за обновлениями!</p>
-                    {% endif %}
-                    <a href="#" class="blog__link link-cta">Подробнее</a>
-                </div>
-                <div class="blog__content-right">
-                    {% if latest_games.0.image %}
-                    <img src="{{ latest_games.0.image.url }}" alt="{{ latest_games.0.name }}" class="blog__image">
-                    {% else %}
-                    <img src="{% static 'puzzlestore/images/default_game.png' %}" alt="Default" class="blog__image">
-                    {% endif %}
-                </div>
-            </div>
-        </section>
-        
-        <section class="popular">
-            <h2 class="popular__title h2">ПОПУЛЯРНЫЕ ИГРЫ</h2>
-            <div class="popular__wrapper">
-                <button class="popular__button-left"></button>
-                <div class="popular__scroller">
-                    {% for game in popular_games %}
-                    <div class="popular__card">
-                        {% if game.image %}
-                        <img src="{{ game.image.url }}" alt="{{ game.name }}" class="popular__image">
-                        {% else %}
-                        <img src="{% static 'puzzlestore/images/default_game.png' %}" alt="{{ game.name }}" class="popular__image">
-                        {% endif %}
-                        <div class="popular__card-bottom">
-                            <a href="{% url 'puzzlestore:game_detail' game.id %}" class="popular__link link-cta">к товару</a>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <p>Пока нет продаж</p>
-                    {% endfor %}
-                </div>
-                <button class="popular__button-left"></button>
-            </div>
-        </section>
 
-        <section class="sales">
-            <h2 class="sales__title h2">Акции</h2>
-            <div class="sales__container">
-                {% for game in sale_games %}
-                <div class="sales__card">
+    <section class="blog">
+        <h2 class="blog__title h2">БЛОГ</h2>
+        <div class="blog__container">
+            <div class="blog__content-left">
+                {% if latest_games %}
+                <h3 class="blog__block-title">Последнее добавление: {{ latest_games.0.name }}</h3>
+                <p class="blog__block-text">
+                    Новинка магазина — <span class="underscored">{{ latest_games.0.name }}</span>! 
+                    {{ latest_games.0.description|truncatewords:20 }}
+                </p>
+                {% else %}
+                <h3 class="blog__block-title">Скоро новые поступления</h3>
+                <p class="blog__block-text">Следите за обновлениями!</p>
+                {% endif %}
+                <a href="#" class="blog__link link-cta">Подробнее</a>
+            </div>
+            <div class="blog__content-right">
+                {% if latest_games.0.image %}
+                <img src="{{ latest_games.0.image.url }}" alt="{{ latest_games.0.name }}" class="blog__image">
+                {% else %}
+                <img src="{% static 'puzzlestore/images/default_game.png' %}" alt="Default" class="blog__image">
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <section class="popular">
+        <h2 class="popular__title h2">ПОПУЛЯРНЫЕ ИГРЫ</h2>
+        <div class="popular__wrapper">
+            <button class="popular__button-left"></button>
+            <div class="popular__scroller">
+                {% for game in popular_games %}
+                <div class="popular__card">
                     {% if game.image %}
-                    <img src="{{ game.image.url }}" alt="{{ game.name }}" class="sales__image">
+                    <img src="{{ game.image.url }}" alt="{{ game.name }}" class="popular__image">
                     {% else %}
-                    <img src="{% static 'puzzlestore/images/default_game.png' %}" alt="{{ game.name }}" class="sales__image">
+                    <img src="{% static 'puzzlestore/images/default_game.png' %}" alt="{{ game.name }}" class="popular__image">
                     {% endif %}
-                    <div class="sales__content">
-                        <h3 class="sales__card-title">{{ game.name }}</h3>
-                        <a href="{% url 'puzzlestore:game_detail' game.id %}" class="sales__link link-cta">Подробнее</a>
+                    <div class="popular__card-bottom">
+                        <a href="{% url 'puzzlestore:game_detail' game.id %}" class="popular__link link-cta">к товару</a>
                     </div>
                 </div>
                 {% empty %}
-                <p>Акции временно недоступны</p>
+                <p>Пока нет продаж</p>
                 {% endfor %}
             </div>
-        </section>
+            <button class="popular__button-left"></button>
+        </div>
+    </section>
 
-        <section class="about">
-            <h2 class="about__title h2">О нас</h2>
-            <p class="about__description">
-                Puzzle store - не просто магазин головоломок, это место, где сбываются <span class="underscored">детские мечты</span>. 
-                Целые миры доступны для исследования и весёлого времяпрепровождения
-            </p>
+    <section class="sales">
+        <h2 class="sales__title h2">Акции</h2>
+        <div class="sales__container">
+            {% for game in sale_games %}
+            <div class="sales__card">
+                {% if game.image %}
+                <img src="{{ game.image.url }}" alt="{{ game.name }}" class="sales__image">
+                {% else %}
+                <img src="{% static 'puzzlestore/images/default_game.png' %}" alt="{{ game.name }}" class="sales__image">
+                {% endif %}
+                <div class="sales__content">
+                    <h3 class="sales__card-title">{{ game.name }}</h3>
+                    <a href="{% url 'puzzlestore:game_detail' game.id %}" class="sales__link link-cta">Подробнее</a>
+                </div>
+            </div>
+            {% empty %}
+            <p>Акции временно недоступны</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="about">
+        <h2 class="about__title h2">О нас</h2>
+        <p class="about__description">
+            Puzzle store - не просто магазин головоломок, это место, где сбываются <span class="underscored">детские мечты</span>. 
+            Целые миры доступны для исследования и весёлого времяпрепровождения
+        </p>
+        
+        <div class="about__slider">
+            <button class="about__arrow about__arrow--left" type="button"></button>
             
-            <div class="about__slider">
-                <button class="about__arrow about__arrow--left" type="button"></button>
-                
-                <div class="about__slides">
-                    <div class="about__slide about__slide--side about__slide--left">
-                        <img src="{% static 'puzzlestore/images/shop.png' %}" alt="Магазин" class="about__image">
-                    </div>
-                    <div class="about__slide about__slide--active">
-                        <img src="{% static 'puzzlestore/images/shop.png' %}" alt="Магазин" class="about__image">
-                        <div class="about__card-bottom">
-                            <a href="#" class="about__map-btn link-cta">Карта</a>
-                        </div>
-                    </div>
-                    <div class="about__slide about__slide--side about__slide--right">
-                        <img src="{% static 'puzzlestore/images/shop.png' %}" alt="Магазин" class="about__image">
+            <div class="about__slides">
+                <div class="about__slide about__slide--side about__slide--left">
+                    <img src="{% static 'puzzlestore/images/shop.png' %}" alt="Магазин" class="about__image">
+                </div>
+                <div class="about__slide about__slide--active">
+                    <img src="{% static 'puzzlestore/images/shop.png' %}" alt="Магазин" class="about__image">
+                    <div class="about__card-bottom">
+                        <a href="#" class="about__map-btn link-cta">Карта</a>
                     </div>
                 </div>
-                
-                <button class="about__arrow about__arrow--right" type="button"></button>
+                <div class="about__slide about__slide--side about__slide--right">
+                    <img src="{% static 'puzzlestore/images/shop.png' %}" alt="Магазин" class="about__image">
+                </div>
             </div>
             
-            <div class="about__dots">
-                <span class="about__dot"></span>
-                <span class="about__dot"></span>
-                <span class="about__dot about__dot--active"></span>
-                <span class="about__dot"></span>
-                <span class="about__dot"></span>
-            </div>
-        </section>
+            <button class="about__arrow about__arrow--right" type="button"></button>
+        </div>
+        
+        <div class="about__dots">
+            <span class="about__dot"></span>
+            <span class="about__dot"></span>
+            <span class="about__dot about__dot--active"></span>
+            <span class="about__dot"></span>
+            <span class="about__dot"></span>
+        </div>
+    </section>
 
-        <section class="reviews">
-            <h2 class="reviews__title h2">Отзывы</h2>
-            <div class="reviews__container">
-                <div class="reviews__card">
-                    <div class="reviews__top">
-                        <div class="reviews__stars">★★★★★</div>
-                        <div class="reviews__author">
-                            <img src="{% static 'puzzlestore/images/avatar.png' %}" alt="Михаил" class="reviews__avatar">
-                            <span class="reviews__name">Михаил</span>
-                        </div>
+    <section class="reviews">
+        <h2 class="reviews__title h2">Отзывы</h2>
+        <div class="reviews__container">
+            <div class="reviews__card">
+                <div class="reviews__top">
+                    <div class="reviews__stars">★★★★★</div>
+                    <div class="reviews__author">
+                        <img src="{% static 'puzzlestore/images/avatar.png' %}" alt="Михаил" class="reviews__avatar">
+                        <span class="reviews__name">Михаил</span>
                     </div>
-                    <div class="reviews__text">
-                        Настолка класс! Настолка класс! Настолка класс! Настолка класс!
-                    </div>
-                    <div class="reviews__date">25 сентября</div>
                 </div>
-
-                <div class="reviews__card">
-                    <div class="reviews__top">
-                        <div class="reviews__stars">★★★★★</div>
-                        <div class="reviews__author">
-                            <img src="{% static 'puzzlestore/images/avatar.png' %}" alt="Не Михаил" class="reviews__avatar">
-                            <span class="reviews__name">Не Михаил</span>
-                        </div>
-                    </div>
-                    <div class="reviews__text">
-                        Доставка быстрая, игра не пострадала, поддержка вежливая, куплю ещё!)))
-                    </div>
-                    <div class="reviews__date">21 февраля</div>
+                <div class="reviews__text">
+                    Настолка класс! Настолка класс! Настолка класс! Настолка класс!
                 </div>
-
-                <div class="reviews__card">
-                    <div class="reviews__top">
-                        <div class="reviews__stars">★★★★★</div>
-                        <div class="reviews__author">
-                            <img src="{% static 'puzzlestore/images/avatar.png' %}" alt="Миха" class="reviews__avatar">
-                            <span class="reviews__name">Миха</span>
-                        </div>
-                    </div>
-                    <div class="reviews__text">
-                        Друг посоветовал, остался доволен
-                    </div>
-                    <div class="reviews__date">1 января</div>
-                </div>
-
-            </div>
-        </section>
-
-        <section class="delivery">
-            <h2 class="delivery__title h2">Доставка и оплата</h2>
-            <div class="delivery__container">
-                <div class="delivery__content-left">
-                    <ul class="delivery__list">
-                        <li class="delivery__item">
-                            <img src="{% static 'puzzlestore/images/dice_1.svg' %}" alt="" class="delivery__dice">
-                            <span class="delivery__text">Мы гарантируем быструю и надежную доставку по всей России и СНГ.</span>
-                        </li>
-                        <li class="delivery__item">
-                            <img src="{% static 'puzzlestore/images/dice_2.svg' %}" alt="" class="delivery__dice">
-                            <span class="delivery__text">Бесплатная доставка при заказе от 3500 ₽.</span>
-                        </li>
-                        <li class="delivery__item">
-                            <img src="{% static 'puzzlestore/images/dice_3.svg' %}" alt="" class="delivery__dice">
-                            <span class="delivery__text">Выбор способа: СДЭК, Почта РФ, Boxberry — вы выбираете удобный.</span>
-                        </li>
-                        <li class="delivery__item">
-                            <img src="{% static 'puzzlestore/images/dice_4.svg' %}" alt="" class="delivery__dice">
-                            <span class="delivery__text">Оплата онлайн картой или при получении.</span>
-                        </li>
-                    </ul>
-                    <a href="#" class="delivery__cta link-cta">
-                        <img src="{% static 'puzzlestore/images/order_arrow.svg' %}" alt="->" class="delivery__cta-arrow">
-                        Заказать
-                    </a>
-                </div>
-                <div class="delivery__content-right">
-                    <img src="{% static 'puzzlestore/images/delivery.png' %}" alt="Доставка" class="delivery__image">
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="footer">
-        <div class="footer__container">
-            
-            <div class="footer__top">
-                <div class="footer__column">
-                    <h3 class="footer__title">Информация</h3>
-                    <ul class="footer__list">
-                        <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_1.svg' %}" alt="" class="footer__dice">
-                            <a href="#" class="footer__link">О нас</a>
-                        </li>
-                        <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_2.svg' %}" alt="" class="footer__dice">
-                            <a href="#" class="footer__link">Новости и блог</a>
-                        </li>
-                        <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_3.svg' %}" alt="" class="footer__dice">
-                            <a href="#" class="footer__link">Отзывы покупателей</a>
-                        </li>
-                        <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_4.svg' %}" alt="" class="footer__dice">
-                            <a href="#" class="footer__link">Карта сайта</a>
-                        </li>
-                        <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_5.svg' %}" alt="" class="footer__dice">
-                            <a href="#" class="footer__link">Вакансии</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="footer__column">
-                    <h3 class="footer__title">Каталог</h3>
-                    <ul class="footer__list">
-                        <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_1.svg' %}" alt="" class="footer__dice">
-                            <a href="{% url 'puzzlestore:catalog' %}" class="footer__link">Все игры</a>
-                        </li>
-                        <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_2.svg' %}" alt="" class="footer__dice">
-                            <a href="#" class="footer__link">Стратегии</a>
-                        </li>
-                        <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_3.svg' %}" alt="" class="footer__dice">
-                            <a href="#" class="footer__link">Кооперативные</a>
-                        </li>
-                        <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_4.svg' %}" alt="" class="footer__dice">
-                            <a href="#" class="footer__link">Детские</a>
-                        </li>
-                        <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_5.svg' %}" alt="" class="footer__dice">
-                            <a href="#" class="footer__link">Карточные</a>
-                        </li>
-                        <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_6.svg' %}" alt="" class="footer__dice">
-                            <a href="#" class="footer__link">Для вечеринок</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="footer__column">
-                    <h3 class="footer__title">Клиентам</h3>
-                    <ul class="footer__list">
-                        <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_1.svg' %}" alt="" class="footer__dice">
-                            <a href="#" class="footer__link">Доставка и оплата</a>
-                        </li>
-                        <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_2.svg' %}" alt="" class="footer__dice">
-                            <a href="#" class="footer__link">Возврат и обмен</a>
-                        </li>
-                        <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_3.svg' %}" alt="" class="footer__dice">
-                            <a href="#" class="footer__link">Программа лояльности</a>
-                        </li>
-                        <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_4.svg' %}" alt="" class="footer__dice">
-                            <a href="#" class="footer__link">Подарочные сертификаты</a>
-                        </li>
-                        <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_5.svg' %}" alt="" class="footer__dice">
-                            <a href="#" class="footer__link">Частые вопросы (FAQ)</a>
-                        </li>
-                    </ul>
-                </div>
+                <div class="reviews__date">25 сентября</div>
             </div>
 
-            <div class="footer__middle">
-                <div class="footer__logo-wrapper">
-                    <span class="footer__logo-text">PUZZLESTORE</span>
-                </div>
-                
-                <div class="footer__contacts">
-                    <div class="footer__contacts-title">
-                        Контакты <span class="footer__brace">{</span>
+            <div class="reviews__card">
+                <div class="reviews__top">
+                    <div class="reviews__stars">★★★★★</div>
+                    <div class="reviews__author">
+                        <img src="{% static 'puzzlestore/images/avatar.png' %}" alt="Не Михаил" class="reviews__avatar">
+                        <span class="reviews__name">Не Михаил</span>
                     </div>
-                    <ul class="footer__contacts-list">
-                        <li class="footer__contacts-item">
-                            <img src="{% static 'puzzlestore/images/dice_1.svg' %}" alt="" class="footer__dice">
-                            Адрес: г. Москва, ул. Гамбургская, д. 15
-                        </li>
-                        <li class="footer__contacts-item">
-                            <img src="{% static 'puzzlestore/images/dice_2.svg' %}" alt="" class="footer__dice">
-                            Телефон: +7 (495) 123-45-67
-                        </li>
-                        <li class="footer__contacts-item">
-                            <img src="{% static 'puzzlestore/images/dice_3.svg' %}" alt="" class="footer__dice">
-                            Email: support@puzzlestore.ru
-                        </li>
-                    </ul>
                 </div>
+                <div class="reviews__text">
+                    Доставка быстрая, игра не пострадала, поддержка вежливая, куплю ещё!)))
+                </div>
+                <div class="reviews__date">21 февраля</div>
+            </div>
+
+            <div class="reviews__card">
+                <div class="reviews__top">
+                    <div class="reviews__stars">★★★★★</div>
+                    <div class="reviews__author">
+                        <img src="{% static 'puzzlestore/images/avatar.png' %}" alt="Миха" class="reviews__avatar">
+                        <span class="reviews__name">Миха</span>
+                    </div>
+                </div>
+                <div class="reviews__text">
+                    Друг посоветовал, остался доволен
+                </div>
+                <div class="reviews__date">1 января</div>
             </div>
 
         </div>
+    </section>
 
-        <div class="footer__bottom">
-            <span class="footer__copyright">Все права защищены</span>
-            <div class="footer__legal">
-                <a href="#" class="footer__legal-link">Пользовательское соглашение</a>
-                <a href="#" class="footer__legal-link">Политика конфиденциальности</a>
+    <section class="delivery">
+        <h2 class="delivery__title h2">Доставка и оплата</h2>
+        <div class="delivery__container">
+            <div class="delivery__content-left">
+                <ul class="delivery__list">
+                    <li class="delivery__item">
+                        <img src="{% static 'puzzlestore/images/dice_1.svg' %}" alt="" class="delivery__dice">
+                        <span class="delivery__text">Мы гарантируем быструю и надежную доставку по всей России и СНГ.</span>
+                    </li>
+                    <li class="delivery__item">
+                        <img src="{% static 'puzzlestore/images/dice_2.svg' %}" alt="" class="delivery__dice">
+                        <span class="delivery__text">Бесплатная доставка при заказе от 3500 ₽.</span>
+                    </li>
+                    <li class="delivery__item">
+                        <img src="{% static 'puzzlestore/images/dice_3.svg' %}" alt="" class="delivery__dice">
+                        <span class="delivery__text">Выбор способа: СДЭК, Почта РФ, Boxberry — вы выбираете удобный.</span>
+                    </li>
+                    <li class="delivery__item">
+                        <img src="{% static 'puzzlestore/images/dice_4.svg' %}" alt="" class="delivery__dice">
+                        <span class="delivery__text">Оплата онлайн картой или при получении.</span>
+                    </li>
+                </ul>
+                <a href="#" class="delivery__cta link-cta">
+                    <img src="{% static 'puzzlestore/images/order_arrow.svg' %}" alt="->" class="delivery__cta-arrow">
+                    Заказать
+                </a>
+            </div>
+            <div class="delivery__content-right">
+                <img src="{% static 'puzzlestore/images/delivery.png' %}" alt="Доставка" class="delivery__image">
             </div>
         </div>
-
-    </footer>
-</body>
-</html>
+    </section>
+{% endblock %}
