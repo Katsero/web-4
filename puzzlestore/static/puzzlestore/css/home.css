@@ -453,8 +453,3 @@
     border-radius: 2.4rem;
     text-align: center;
 }
-
-.link-cta {
-    background-color: var(--color-CTA);
-    color: var(--color-text--light);
-}

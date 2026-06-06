@@ -1,77 +1,104 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ game.name }}</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
-        .card { border: 1px solid #ccc; padding: 20px; border-radius: 4px; max-width: 600px; }
-        .label { font-weight: bold; }
-        .sale { border: 1px solid #ccc; padding: 10px; margin: 5px 0; }
-        a { color: #0056b3; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        
-        .btn-print {
-            background-color: #f44336;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        .btn-print:hover { background-color: #d32f2f; }
+{% extends 'puzzlestore/base.html' %}
+{% load static %}
 
-        /* ===== СТИЛИ ДЛЯ ПЕЧАТИ (PDF) ===== */
-        @media print {
-            body { margin: 0; font-size: 11pt; }
-            .no-print { display: none !important; }
-            .card { border: none; max-width: 100%; padding: 0; }
-            .sale { page-break-inside: avoid; }
-            h1 { color: #000; border-bottom: 2px solid #000; }
-            h3 { color: #333; }
-            a { color: #000; text-decoration: none; }
-            
-            @page {
-                size: A4;
-                margin: 2cm;
-            }
-        }
-    </style>
-</head>
-<body>
-    <p class="no-print"><a href="{% url 'puzzlestore:catalog' %}">Назад к каталогу</a></p>
+{% block title %}{{ game.name }} — PuzzleStore{% endblock %}
 
-    <div class="card">
-        <!-- Кнопка печати/сохранения в PDF -->
-        <button class="btn-print no-print" onclick="window.print()">
-            Сохранить в PDF
-        </button>
-        
-        <h1>{{ game.name }}</h1>
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'puzzlestore/css/game_detail.css' %}">
+{% endblock %}
 
-        <p><span class="label">Издатель:</span> {{ game.publisher.name }}</p>
-        <p><span class="label">Возраст:</span> {{ game.age_limit.name }}</p>
-        <p><span class="label">Жанры:</span>
-            {% for genre in game.genres.all %}
-                {{ genre.name }}{% if not forloop.last %}, {% endif %}
-            {% endfor %}
-        </p>
-        <p><span class="label">Цена:</span> {{ game.price }} руб.</p>
-        <p><span class="label">Остаток:</span> {{ game.current_stock }} шт.</p>
-        <p><span class="label">Рейтинг:</span> {{ game.rating_avg|default:"—" }}</p>
-
-        <h3>История продаж:</h3>
-        {% for sale in sales %}
-        <div class="sale">
-            <strong>{{ sale.sale_date|date:"d.m.Y H:i" }}</strong><br>
-            Количество: {{ sale.quantity }} шт.<br>
-            Сумма: {{ sale.unit_price|add:0 }} руб.<br>
-            {% if sale.user %}Покупатель: {{ sale.user.username }}{% else %}Гость{% endif %}
+{% block content %}
+<div class="game-detail">
+    <div class="game-detail__grid">
+        <div class="game-detail__image-wrapper">
+            {% if game.image %}
+                <img src="{{ game.image.url }}" alt="{{ game.name }}" class="game-detail__image">
+            {% else %}
+                <img src="{% static 'puzzlestore/images/default_game.png' %}" alt="{{ game.name }}" class="game-detail__image">
+            {% endif %}
         </div>
-        {% empty %}
-        <p>Продаж пока нет</p>
+
+        <div class="game-detail__info">
+            <h1 class="game-detail__title">{{ game.name }}</h1>
+
+            {% if has_multiple_publishers %}
+            <div class="game-detail__publisher-toggle no-print">
+                {% for pub_game in publishers %}
+                    <a href="?publisher={{ pub_game.publisher.id }}" 
+                       class="game-detail__publisher-btn {% if pub_game.id == game.id %}game-detail__publisher-btn--active{% endif %}">
+                        {{ pub_game.publisher.name }} — {{ pub_game.price }}₽
+                    </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="game-detail__meta">
+                <div class="game-detail__meta-row">
+                    <span class="game-detail__meta-label">Издатель:</span>
+                    <span class="game-detail__meta-value">{{ game.publisher.name }}</span>
+                </div>
+                <div class="game-detail__meta-row">
+                    <span class="game-detail__meta-label">Возраст:</span>
+                    <span class="game-detail__meta-value">{{ game.age_limit.name }}</span>
+                </div>
+                <div class="game-detail__meta-row">
+                    <span class="game-detail__meta-label">Жанры:</span>
+                    <span class="game-detail__meta-value">
+                        {% for genre in genres %}
+                            {{ genre.name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </span>
+                </div>
+                <div class="game-detail__meta-row">
+                    <span class="game-detail__meta-label">Рейтинг:</span>
+                    <span class="game-detail__meta-value">{{ game.rating_avg|default:"—" }}</span>
+                </div>
+            </div>
+
+            <p class="game-detail__price">{{ game.price }} ₽</p>
+            <p class="game-detail__stock {% if game.current_stock < 5 %}game-detail__stock--low{% endif %}">
+                В наличии: {{ game.current_stock }} шт.
+            </p>
+
+            {% if game.description %}
+            <div class="game-detail__description">
+                {{ game.description }}
+            </div>
+            {% endif %}
+
+            <div class="game-detail__actions no-print">
+                <button class="game-detail__btn game-detail__btn--cart">В корзину</button>
+                <button class="game-detail__btn game-detail__btn--wishlist">В вишлист</button>
+                <button class="game-detail__btn game-detail__btn--pdf" onclick="window.print()">Скачать PDF</button>
+                {% if user.is_staff %}
+                    <a href="{% url 'puzzlestore:games_crud' %}?highlight={{ game.id }}" class="game-detail__btn game-detail__btn--edit">Редактировать</a>
+                {% endif %}
+            </div>
+
+            {% if creators %}
+            <div class="game-detail__creators">
+                <h3 class="game-detail__creators-title">Создатели</h3>
+                <ul class="game-detail__creators-list">
+                    {% for creator in creators %}
+                        <li class="game-detail__creator-tag">{{ creator.name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if sales %}
+    <div class="game-detail__sales">
+        <h2 class="game-detail__sales-title">История продаж</h2>
+        {% for sale in sales %}
+        <div class="game-detail__sale-item">
+            <div class="game-detail__sale-date">{{ sale.sale_date|date:"d.m.Y H:i" }}</div>
+            <div>Количество: {{ sale.quantity }} шт. | Сумма: {{ sale.unit_price }} ₽</div>
+            <div>Покупатель: {% if sale.user %}{{ sale.user.username }}{% else %}Гость{% endif %}</div>
+        </div>
         {% endfor %}
     </div>
-</body>
-</html>
+    {% endif %}
+</div>
+{% endblock %}

@@ -38,10 +38,25 @@ def catalog_view(request):
     return render(request, 'puzzlestore/catalog.html', context)
 
 def game_detail(request, pk):
-    game = get_object_or_404(
-        BoardGame.objects.select_related('publisher', 'age_limit'),
-        pk=pk
-    )
+    base_game = get_object_or_404(BoardGame, pk=pk)
+    
+    publisher_id = request.GET.get('publisher')
+    
+    if publisher_id:
+        game = get_object_or_404(
+            BoardGame.objects.select_related('publisher', 'age_limit'),
+            name=base_game.name,
+            publisher_id=publisher_id
+        )
+    else:
+        game = get_object_or_404(
+            BoardGame.objects.select_related('publisher', 'age_limit'),
+            pk=pk
+        )
+    
+    publishers = BoardGame.objects.filter(
+        name=game.name
+    ).select_related('publisher').order_by('price')
     
     sales = game.sales.select_related('user').all()
     creators = game.creators.all()
@@ -52,6 +67,8 @@ def game_detail(request, pk):
         'sales': sales,
         'creators': creators,
         'genres': genres,
+        'publishers': publishers,
+        'has_multiple_publishers': publishers.count() > 1,
     }
     return render(request, 'puzzlestore/game_detail.html', context)
 

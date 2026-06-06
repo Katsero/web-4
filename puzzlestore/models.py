@@ -238,6 +238,12 @@ class BoardGame(models.Model):
         verbose_name = "Настольная игра"
         verbose_name_plural = "Настольные игры"
         ordering = ['-created_at']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'publisher'],
+                name='unique_game_publisher'
+            )
+        ]
 
     def __str__(self):
         return self.name
