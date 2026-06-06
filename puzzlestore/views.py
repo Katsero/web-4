@@ -101,7 +101,11 @@ def stats_view(request):
 @admin_required
 def games_crud_view(request):
     games = BoardGame.objects.all().select_related('publisher', 'age_limit')
-    context = {'games': games}
+    highlight_id = request.GET.get('highlight')
+    context = {
+        'games': games,
+        'highlight_id': highlight_id,
+    }
     return render(request, 'puzzlestore/games.html', context)
 
 @admin_required

@@ -40,7 +40,7 @@
             <th>Действия</th>
         </tr>
         {% for game in games %}
-        <tr>
+        <tr class="{% if highlight_id == game.id|stringformat:'d' %}highlighted{% endif %}">
             <td>{{ game.id }}</td>
             <td><a href="{{ game.get_absolute_url }}">{{ game.name }}</a></td>
             <td>{{ game.publisher.name }}</td>
