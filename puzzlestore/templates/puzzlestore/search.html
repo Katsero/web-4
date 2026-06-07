@@ -29,7 +29,7 @@
 
     {% if query %}
     <div class="section">
-        <h2>Поиск с __icontains (без учёта регистра)</h2>
+        <h2>Поиск с __icontains</h2>
         <p>Найдено игр: <b>{{ results_icontains|length }}</b></p>
         <table>
             <tr><th>ID</th><th>Название</th><th>Издатель</th><th>Цена</th></tr>
@@ -53,7 +53,7 @@
     </div>
 
     <div class="section">
-        <h2>Поиск с __contains (с учётом регистра)</h2>
+        <h2>Поиск с __contains</h2>
         <p>Найдено игр: <b>{{ results_contains|length }}</b></p>
         <table>
             <tr><th>ID</th><th>Название</th><th>Издатель</th><th>Цена</th></tr>
@@ -79,7 +79,6 @@
 
     <div class="section">
         <h2>values() — Список словарей</h2>
-        <p>Возвращает только указанные поля в виде словарей. Используется для сериализации в JSON.</p>
         <table>
             <tr><th>ID</th><th>Название</th><th>Сайт</th></tr>
             {% for pub in publishers_values %}
@@ -94,13 +93,11 @@
 
     <div class="section">
         <h2>values_list(flat=True) — Плоский список</h2>
-        <p>Если указано одно поле и flat=True, возвращается простой список значений.</p>
         <pre>{{ game_names_flat }}</pre>
     </div>
 
     <div class="section">
         <h2>values_list() — Список кортежей</h2>
-        <p>Возвращает список кортежей. Удобно для передачи данных в JavaScript.</p>
         <table>
             <tr><th>Название</th><th>Цена</th></tr>
             {% for item in game_prices_list %}
@@ -114,13 +111,11 @@
 
     <div class="section">
         <h2>count() — Подсчёт количества</h2>
-        <p>Выполняет SQL <code>SELECT COUNT(*)</code>. Работает быстрее, чем <code>len(queryset)</code>, так как не загружает объекты в память Python.</p>
         <p>Игр в наличии на складе: <b>{{ games_in_stock_count }}</b></p>
     </div>
 
     <div class="section">
         <h2>exists() — Проверка наличия</h2>
-        <p>Выполняет SQL <code>SELECT 1 ... LIMIT 1</code>. Работает быстрее, чем <code>if queryset</code>, так как останавливает поиск после первой найденной записи.</p>
         <p>
             Есть ли игры с нулевым остатком: 
             {% if has_out_of_stock_games %}
@@ -133,7 +128,6 @@
 
     <div class="section">
         <h2>update() — Массовое обновление</h2>
-        <p>Обновляет все записи одним SQL-запросом. Не вызывает save() и сигналы.</p>
         <p>Продаж со статусом "Новый" сейчас: <b>{{ new_sales_count }}</b></p>
         
         {% if update_message %}
@@ -149,7 +143,6 @@
 
     <div class="section">
         <h2>delete() — Массовое удаление</h2>
-        <p>Удаляет все записи одним SQL-запросом. Соблюдает on_delete и вызывает сигналы.</p>
         <p>Продаж со статусом "Отменён" сейчас: <b>{{ cancelled_sales_count }}</b></p>
         
         {% if delete_message %}
