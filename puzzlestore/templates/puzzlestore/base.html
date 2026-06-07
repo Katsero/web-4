@@ -5,16 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}PuzzleStore{% endblock %}</title>
     {% load static %}
+    <link rel="icon" type="image/x-icon" href="{% static 'puzzlestore/images/favicon.ico' %}">
     <link rel="stylesheet" href="{% static 'puzzlestore/css/normalize.css' %}">
     <link rel="stylesheet" href="{% static 'puzzlestore/css/base.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Перейти к содержимому</a>
+
     <header class="header">
         <div class="header__grid">
             <div class="header__logo">
-                <img src="{% static 'puzzlestore/images/logo.png' %}" alt="CubeIcon">
-                <span class="text--logo">PUZZLESTORE</span>
+                <img src="{% static 'puzzlestore/images/logo.svg' %}" alt="PuzzleStore" class="header__logo-img">
             </div>
             <form action="{% url 'puzzlestore:search' %}" method="get" class="header__search">
                 <input type="text" name="q" placeholder="Поиск" value="{{ request.GET.q }}">
@@ -30,7 +32,7 @@
         </div>
     </header>
 
-    <main>
+    <main id="main-content">
         {% block content %}{% endblock %}
     </main>
 
@@ -123,7 +125,7 @@
 
             <div class="footer__middle">
                 <div class="footer__logo-wrapper">
-                    <span class="footer__logo-text">PUZZLESTORE</span>
+                    <img src="{% static 'puzzlestore/images/logo.svg' %}" alt="PuzzleStore" class="footer__logo-img">
                 </div>
                 
                 <div class="footer__contacts">

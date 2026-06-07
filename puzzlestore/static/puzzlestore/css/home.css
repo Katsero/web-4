@@ -23,11 +23,13 @@
     align-items: start;
     justify-content: space-between;
     padding: 4rem;
+    gap: 3rem;
 }
 
 .blog__content-right {
     max-width: 45%;
     min-width: 40%;
+    align-content: center;
 }
 
 .blog__block-title {
@@ -53,6 +55,8 @@
     height: auto;
     object-fit: cover;
     font-size: 4rem;
+    border-radius: 2.4rem;
+    border: 0.3rem solid var(--color-text--dark);
 }
 
 .popular__wrapper {
