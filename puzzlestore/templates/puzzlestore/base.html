@@ -15,9 +15,9 @@
 
     <header class="header">
         <div class="header__grid">
-            <div class="header__logo">
+            <a href="{% url 'puzzlestore:home' %}" class="header__logo">
                 <img src="{% static 'puzzlestore/images/logo.svg' %}" alt="PuzzleStore" class="header__logo-img">
-            </div>
+            </a>
             <form action="{% url 'puzzlestore:search' %}" method="get" class="header__search">
                 <input type="text" name="q" placeholder="Поиск" value="{{ request.GET.q }}">
             </form>
@@ -124,9 +124,9 @@
             </div>
 
             <div class="footer__middle">
-                <div class="footer__logo-wrapper">
+                <a href="{% url 'puzzlestore:home' %}" class="footer__logo-wrapper">
                     <img src="{% static 'puzzlestore/images/logo.svg' %}" alt="PuzzleStore" class="footer__logo-img">
-                </div>
+                </a>
                 
                 <div class="footer__contacts">
                     <div class="footer__contacts-title">
