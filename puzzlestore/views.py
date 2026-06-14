@@ -8,7 +8,7 @@ from .forms import BoardGameForm
 from .decorators import admin_required
 
 def home_view(request):
-    latest_games = BoardGame.objects.order_by('-created_at')[:5]
+    latest_games = BoardGame.objects.order_by('-created_at')[:1]
     
     popular_games = BoardGame.objects.annotate(
         sales_count=Count('sales')
@@ -42,6 +42,22 @@ def game_detail(request, pk):
     
     publisher_id = request.GET.get('publisher')
     
+    # if publisher_id:
+    #     game = get_object_or_404(
+    #         BoardGame, 
+    #         name=base_game.name,
+    #         publisher_id=publisher_id
+    #     )
+    # else:
+    #     game = get_object_or_404(
+    #         BoardGame,
+    #         pk=pk
+    #     )
+    
+    # publisher_name = game.publisher.name
+    # age_limit_name = game.age_limit.name 
+
+
     if publisher_id:
         game = get_object_or_404(
             BoardGame.objects.select_related('publisher', 'age_limit'),

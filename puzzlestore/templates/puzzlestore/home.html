@@ -31,7 +31,7 @@
                 {% if latest_games.0.image %}
                 <img src="{{ latest_games.0.image.url }}" alt="{{ latest_games.0.name }}" class="blog__image">
                 {% else %}
-                <img src="{% static 'puzzlestore/images/default_game.png' %}" alt="Default" class="blog__image">
+                <img src="{% static 'puzzlestore/images/default_game.jpg' %}" alt="Default" class="blog__image">
                 {% endif %}
             </div>
         </div>
@@ -47,7 +47,7 @@
                     {% if game.image %}
                     <img src="{{ game.image.url }}" alt="{{ game.name }}" class="popular__image">
                     {% else %}
-                    <img src="{% static 'puzzlestore/images/default_game.png' %}" alt="{{ game.name }}" class="popular__image">
+                    <img src="{% static 'puzzlestore/images/default_game.jpg' %}" alt="{{ game.name }}" class="popular__image">
                     {% endif %}
                     <div class="popular__card-bottom">
                         <a href="{% url 'puzzlestore:game_detail' game.id %}" class="popular__link link-cta">к товару</a>
@@ -69,7 +69,7 @@
                 {% if game.image %}
                 <img src="{{ game.image.url }}" alt="{{ game.name }}" class="sales__image">
                 {% else %}
-                <img src="{% static 'puzzlestore/images/default_game.png' %}" alt="{{ game.name }}" class="sales__image">
+                <img src="{% static 'puzzlestore/images/default_game.jpg' %}" alt="{{ game.name }}" class="sales__image">
                 {% endif %}
                 <div class="sales__content">
                     <h3 class="sales__card-title">{{ game.name }}</h3>
