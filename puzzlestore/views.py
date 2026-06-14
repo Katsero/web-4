@@ -20,10 +20,25 @@ def home_view(request):
         price__lt=2000
     ).order_by('price')[:3]
     
+    total_revenue = Sale.objects.aggregate(
+        total=Sum(F('quantity') * F('unit_price'))
+    )['total'] or 0
+    
+    top_publishers = Publisher.objects.annotate(
+        games_count=Count('board_games')
+    ).order_by('-games_count')[:3]
+    
+    games_in_stock = BoardGame.objects.filter(
+        current_stock__gt=0
+    ).count()
+    
     context = {
         'latest_games': latest_games,
         'popular_games': popular_games,
         'sale_games': sale_games,
+        'total_revenue': total_revenue,
+        'top_publishers': top_publishers,
+        'games_in_stock': games_in_stock,
     }
     return render(request, 'puzzlestore/home.html', context)
 

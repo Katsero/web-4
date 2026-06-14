@@ -457,3 +457,102 @@
     border-radius: 2.4rem;
     text-align: center;
 }
+
+/* ===== Статистика магазина ===== */
+.stats-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.stats-summary__title {
+    align-self: start;
+}
+
+.stats-summary__container {
+    display: flex;
+    gap: 2rem;
+    max-width: 160rem;
+    width: 100%;
+    justify-content: center;
+}
+
+.stats-summary__card {
+    flex: 1;
+    background-color: var(--color-main);
+    border-radius: 2.4rem;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    text-align: center;
+}
+
+.stats-summary__card--wide {
+    flex: 2;
+}
+
+.stats-summary__value {
+    font-size: 4.8rem;
+    font-family: var(--font-title-family);
+    font-weight: 700;
+    color: var(--color-text--dark);
+}
+
+.stats-summary__label {
+    font-size: 3.2rem;
+    font-family: var(--font-main-family);
+    color: var(--color-text--dark);
+}
+
+.stats-summary__publishers {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.stats-summary__publishers li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: var(--color-text--light);
+    border-radius: 1.2rem;
+    font-size: 2.8rem;
+    font-family: var(--font-main-family);
+}
+
+.stats-summary__publisher-name {
+    font-weight: 500;
+}
+
+.stats-summary__publisher-count {
+    color: var(--color-main--dark);
+    font-weight: 700;
+}
+
+.stats-summary__footer {
+    text-align: center;
+}
+
+.stats-summary__link {
+    display: inline-block;
+    padding: 1.5rem 4rem;
+    background-color: var(--color-buttons);
+    color: var(--color-text--light);
+    border-radius: 2.4rem;
+    font-size: 3.2rem;
+    font-family: var(--font-title-family);
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.stats-summary__link:hover {
+    opacity: 0.85;
+}
