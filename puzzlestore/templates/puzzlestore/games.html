@@ -1,66 +1,126 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Управление играми</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
-        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        th { background-color: #eee; }
-        a { color: #0056b3; text-decoration: none; margin-right: 10px; }
-        a:hover { text-decoration: underline; }
-        .btn { padding: 5px 10px; border: 1px solid #ccc; border-radius: 3px; }
-        .btn-edit { background-color: #4CAF50; color: white; }
-        .btn-delete { background-color: #f44336; color: white; }
-        .btn-add { background-color: #2196F3; color: white; padding: 10px 20px; font-size: 16px; }
-        .messages { margin-bottom: 20px; }
-        .message { padding: 10px; background-color: #4CAF50; color: white; margin-bottom: 5px; }
-        
-        /* Подсветка строки */
+        body {
+            background-color: #f8f9fa;
+        }
         .highlighted {
             background-color: #FFD700 !important;
+            transition: background-color 2s ease;
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(102, 204, 255, 0.15);
+        }
+        .highlighted:hover {
+            background-color: #FFD700 !important;
+        }
+        .btn-action {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.9rem;
+        }
+        .page-header {
+            background: linear-gradient(135deg, #0367A6 0%, #66CCFF 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        .page-header h1 {
+            margin: 0;
+            font-size: 2rem;
         }
     </style>
 </head>
 <body>
-    <h1>Управление играми</h1>
-    
-    {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <div class="message">{{ message }}</div>
-        {% endfor %}
+    <div class="container py-4">
+        <div class="page-header d-flex justify-content-between align-items-center">
+            <h1><i class="bi bi-controller"></i> Управление играми</h1>
+            <a href="{% url 'puzzlestore:game_create' %}" class="btn btn-light btn-lg">
+                <i class="bi bi-plus-circle"></i> Добавить игру
+            </a>
+        </div>
+
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'success' }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="card shadow">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col" style="width: 60px;">ID</th>
+                                <th scope="col">Название</th>
+                                <th scope="col">Издатель</th>
+                                <th scope="col">Цена</th>
+                                <th scope="col">Остаток</th>
+                                <th scope="col" style="width: 220px;">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for game in games %}
+                            <tr class="{% if highlight_id == game.id|stringformat:'d' %}highlighted{% endif %}">
+                                <td><span class="badge bg-secondary">{{ game.id }}</span></td>
+                                <td>
+                                    <a href="{{ game.get_absolute_url }}" class="text-decoration-none fw-semibold">
+                                        <i class="bi bi-box-seam"></i> {{ game.name }}
+                                    </a>
+                                </td>
+                                <td>{{ game.publisher.name }}</td>
+                                <td><strong>{{ game.price }} ₽</strong></td>
+                                <td>
+                                    {% if game.current_stock > 0 %}
+                                    <span class="badge bg-success">{{ game.current_stock }} шт.</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Нет в наличии</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{% url 'puzzlestore:game_update' game.id %}" class="btn btn-sm btn-success btn-action">
+                                            <i class="bi bi-pencil"></i> Изменить
+                                        </a>
+                                        <a href="{% url 'puzzlestore:game_delete' game.id %}" class="btn btn-sm btn-danger btn-action">
+                                            <i class="bi bi-trash"></i> Удалить
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                                    <p class="mt-2 mb-0">Игр нет</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a href="{% url 'puzzlestore:catalog' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Назад к каталогу
+            </a>
+        </div>
     </div>
-    {% endif %}
-    
-    <p><a href="{% url 'puzzlestore:game_create' %}" class="btn btn-add">+ Добавить игру</a></p>
-    
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Название</th>
-            <th>Издатель</th>
-            <th>Цена</th>
-            <th>Остаток</th>
-            <th>Действия</th>
-        </tr>
-        {% for game in games %}
-        <tr class="{% if highlight_id == game.id|stringformat:'d' %}highlighted{% endif %}">
-            <td>{{ game.id }}</td>
-            <td><a href="{{ game.get_absolute_url }}">{{ game.name }}</a></td>
-            <td>{{ game.publisher.name }}</td>
-            <td>{{ game.price }} ₽</td>
-            <td>{{ game.current_stock }}</td>
-            <td>
-                <a href="{% url 'puzzlestore:game_update' game.id %}" class="btn btn-edit">Изменить</a>
-                <a href="{% url 'puzzlestore:game_delete' game.id %}" class="btn btn-delete">Удалить</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="6">Игр нет</td></tr>
-        {% endfor %}
-    </table>
-    
-    <p><a href="{% url 'puzzlestore:catalog' %}">← Назад к каталогу</a></p>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
