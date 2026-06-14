@@ -20,7 +20,7 @@
             </a>
             
             <form action="{% url 'puzzlestore:search' %}" method="get" class="header__search" role="search" aria-label="Поиск по сайту">
-                <label for="search-input" class="visually-hidden">Поиск по играм</label>
+                <label for="search-input" class="hidden">Поиск по играм</label>
                 <input type="text" id="search-input" name="q" placeholder="Поиск" value="{{ request.GET.q }}" aria-label="Поиск по играм">
             </form>
             
