@@ -13,110 +13,115 @@
 <body>
     <a href="#main-content" class="skip-link">Перейти к содержимому</a>
 
-    <header class="header">
+    <header class="header" role="banner">
         <div class="header__grid">
-            <a href="{% url 'puzzlestore:home' %}" class="header__logo">
-                <img src="{% static 'puzzlestore/images/logo.svg' %}" alt="PuzzleStore" class="header__logo-img">
+            <a href="{% url 'puzzlestore:home' %}" class="header__logo" aria-label="PuzzleStore — на главную">
+                <img src="{% static 'puzzlestore/images/logo.svg' %}" alt="" class="header__logo-img" aria-hidden="true">
             </a>
-            <form action="{% url 'puzzlestore:search' %}" method="get" class="header__search">
-                <input type="text" name="q" placeholder="Поиск" value="{{ request.GET.q }}">
+            
+            <form action="{% url 'puzzlestore:search' %}" method="get" class="header__search" role="search" aria-label="Поиск по сайту">
+                <label for="search-input" class="visually-hidden">Поиск по играм</label>
+                <input type="text" id="search-input" name="q" placeholder="Поиск" value="{{ request.GET.q }}" aria-label="Поиск по играм">
             </form>
+            
             <a href="#" class="header__link header__auth">Вход/регистрация</a>
             
-            <a href="{% url 'puzzlestore:catalog' %}" class="header__link">Каталог</a>
-            <a href="{% url 'puzzlestore:catalog' %}?new=1" class="header__link link-cta">Новинки</a>
-            <a href="#" class="header__link">Блог</a>
-            <a href="#" class="header__link">Поддержка</a>
-            <a href="{% url 'puzzlestore:stats' %}" class="header__link">О нас</a>
-            <a href="#" class="header__link">Корзина</a>
+            <nav aria-label="Главная навигация">
+                <a href="{% url 'puzzlestore:catalog' %}" class="header__link">Каталог</a>
+                <a href="{% url 'puzzlestore:catalog' %}?new=1" class="header__link link-cta">Новинки</a>
+                <a href="#" class="header__link">Блог</a>
+                <a href="#" class="header__link">Поддержка</a>
+                <a href="{% url 'puzzlestore:stats' %}" class="header__link">О нас</a>
+                <a href="#" class="header__link">Корзина</a>
+            </nav>
         </div>
     </header>
 
-    <main id="main-content">
+    <main id="main-content" role="main" tabindex="-1">
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="footer">
+    <footer class="footer" role="contentinfo">
         <div class="footer__container">
             
             <div class="footer__top">
                 <div class="footer__column">
-                    <h3 class="footer__title">Информация</h3>
-                    <ul class="footer__list">
+                    <h3 class="footer__title" id="footer-info">Информация</h3>
+                    <ul class="footer__list" aria-labelledby="footer-info">
                         <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_1.svg' %}" alt="" class="footer__dice">
+                            <img src="{% static 'puzzlestore/images/dice_1.svg' %}" alt="" class="footer__dice" aria-hidden="true">
                             <a href="{% url 'puzzlestore:stats' %}" class="footer__link">О нас</a>
                         </li>
                         <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_2.svg' %}" alt="" class="footer__dice">
+                            <img src="{% static 'puzzlestore/images/dice_2.svg' %}" alt="" class="footer__dice" aria-hidden="true">
                             <a href="#" class="footer__link">Новости и блог</a>
                         </li>
                         <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_3.svg' %}" alt="" class="footer__dice">
+                            <img src="{% static 'puzzlestore/images/dice_3.svg' %}" alt="" class="footer__dice" aria-hidden="true">
                             <a href="#" class="footer__link">Отзывы покупателей</a>
                         </li>
                         <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_4.svg' %}" alt="" class="footer__dice">
+                            <img src="{% static 'puzzlestore/images/dice_4.svg' %}" alt="" class="footer__dice" aria-hidden="true">
                             <a href="#" class="footer__link">Карта сайта</a>
                         </li>
                         <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_5.svg' %}" alt="" class="footer__dice">
+                            <img src="{% static 'puzzlestore/images/dice_5.svg' %}" alt="" class="footer__dice" aria-hidden="true">
                             <a href="#" class="footer__link">Вакансии</a>
                         </li>
                     </ul>
                 </div>
 
                 <div class="footer__column">
-                    <h3 class="footer__title">Каталог</h3>
-                    <ul class="footer__list">
+                    <h3 class="footer__title" id="footer-catalog">Каталог</h3>
+                    <ul class="footer__list" aria-labelledby="footer-catalog">
                         <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_1.svg' %}" alt="" class="footer__dice">
+                            <img src="{% static 'puzzlestore/images/dice_1.svg' %}" alt="" class="footer__dice" aria-hidden="true">
                             <a href="{% url 'puzzlestore:catalog' %}" class="footer__link">Все игры</a>
                         </li>
                         <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_2.svg' %}" alt="" class="footer__dice">
+                            <img src="{% static 'puzzlestore/images/dice_2.svg' %}" alt="" class="footer__dice" aria-hidden="true">
                             <a href="{% url 'puzzlestore:catalog' %}?genre=Стратегии" class="footer__link">Стратегии</a>
                         </li>
                         <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_3.svg' %}" alt="" class="footer__dice">
+                            <img src="{% static 'puzzlestore/images/dice_3.svg' %}" alt="" class="footer__dice" aria-hidden="true">
                             <a href="{% url 'puzzlestore:catalog' %}?genre=Кооперативные" class="footer__link">Кооперативные</a>
                         </li>
                         <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_4.svg' %}" alt="" class="footer__dice">
+                            <img src="{% static 'puzzlestore/images/dice_4.svg' %}" alt="" class="footer__dice" aria-hidden="true">
                             <a href="{% url 'puzzlestore:catalog' %}?genre=Детские" class="footer__link">Детские</a>
                         </li>
                         <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_5.svg' %}" alt="" class="footer__dice">
+                            <img src="{% static 'puzzlestore/images/dice_5.svg' %}" alt="" class="footer__dice" aria-hidden="true">
                             <a href="{% url 'puzzlestore:catalog' %}?genre=Карточные" class="footer__link">Карточные</a>
                         </li>
                         <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_6.svg' %}" alt="" class="footer__dice">
+                            <img src="{% static 'puzzlestore/images/dice_6.svg' %}" alt="" class="footer__dice" aria-hidden="true">
                             <a href="{% url 'puzzlestore:catalog' %}?genre=Для вечеринок" class="footer__link">Для вечеринок</a>
                         </li>
                     </ul>
                 </div>
 
                 <div class="footer__column">
-                    <h3 class="footer__title">Клиентам</h3>
-                    <ul class="footer__list">
+                    <h3 class="footer__title" id="footer-clients">Клиентам</h3>
+                    <ul class="footer__list" aria-labelledby="footer-clients">
                         <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_1.svg' %}" alt="" class="footer__dice">
+                            <img src="{% static 'puzzlestore/images/dice_1.svg' %}" alt="" class="footer__dice" aria-hidden="true">
                             <a href="#delivery" class="footer__link">Доставка и оплата</a>
                         </li>
                         <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_2.svg' %}" alt="" class="footer__dice">
+                            <img src="{% static 'puzzlestore/images/dice_2.svg' %}" alt="" class="footer__dice" aria-hidden="true">
                             <a href="#" class="footer__link">Возврат и обмен</a>
                         </li>
                         <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_3.svg' %}" alt="" class="footer__dice">
+                            <img src="{% static 'puzzlestore/images/dice_3.svg' %}" alt="" class="footer__dice" aria-hidden="true">
                             <a href="#" class="footer__link">Программа лояльности</a>
                         </li>
                         <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_4.svg' %}" alt="" class="footer__dice">
+                            <img src="{% static 'puzzlestore/images/dice_4.svg' %}" alt="" class="footer__dice" aria-hidden="true">
                             <a href="#" class="footer__link">Подарочные сертификаты</a>
                         </li>
                         <li class="footer__item">
-                            <img src="{% static 'puzzlestore/images/dice_5.svg' %}" alt="" class="footer__dice">
+                            <img src="{% static 'puzzlestore/images/dice_5.svg' %}" alt="" class="footer__dice" aria-hidden="true">
                             <a href="#" class="footer__link">Частые вопросы (FAQ)</a>
                         </li>
                     </ul>
@@ -124,26 +129,26 @@
             </div>
 
             <div class="footer__middle">
-                <a href="{% url 'puzzlestore:home' %}" class="footer__logo-wrapper">
-                    <img src="{% static 'puzzlestore/images/logo.svg' %}" alt="PuzzleStore" class="footer__logo-img">
+                <a href="{% url 'puzzlestore:home' %}" class="footer__logo-wrapper" aria-label="PuzzleStore — на главную">
+                    <img src="{% static 'puzzlestore/images/logo.svg' %}" alt="" class="footer__logo-img" aria-hidden="true">
                 </a>
                 
                 <div class="footer__contacts">
                     <div class="footer__contacts-title">
-                        Контакты <span class="footer__brace">{</span>
+                        Контакты <span class="footer__brace" aria-hidden="true">{</span>
                     </div>
-                    <ul class="footer__contacts-list">
+                    <ul class="footer__contacts-list" aria-label="Контактная информация">
                         <li class="footer__contacts-item">
-                            <img src="{% static 'puzzlestore/images/dice_1.svg' %}" alt="" class="footer__dice">
-                            Адрес: г. Москва, ул. Гамбургская, д. 15
+                            <img src="{% static 'puzzlestore/images/dice_1.svg' %}" alt="" class="footer__dice" aria-hidden="true">
+                            <span>Адрес: г. Москва, ул. Гамбургская, д. 15</span>
                         </li>
                         <li class="footer__contacts-item">
-                            <img src="{% static 'puzzlestore/images/dice_2.svg' %}" alt="" class="footer__dice">
-                            Телефон: +7 (495) 123-45-67
+                            <img src="{% static 'puzzlestore/images/dice_2.svg' %}" alt="" class="footer__dice" aria-hidden="true">
+                            <a href="tel:+74951234567" class="footer__link">Телефон: +7 (495) 123-45-67</a>
                         </li>
                         <li class="footer__contacts-item">
-                            <img src="{% static 'puzzlestore/images/dice_3.svg' %}" alt="" class="footer__dice">
-                            Email: support@puzzlestore.ru
+                            <img src="{% static 'puzzlestore/images/dice_3.svg' %}" alt="" class="footer__dice" aria-hidden="true">
+                            <a href="mailto:support@puzzlestore.ru" class="footer__link">Email: support@puzzlestore.ru</a>
                         </li>
                     </ul>
                 </div>
@@ -152,7 +157,7 @@
         </div>
 
         <div class="footer__bottom">
-            <span class="footer__copyright">Все права защищены</span>
+            <span class="footer__copyright">© {% now "Y" %} PuzzleStore. Все права защищены</span>
             <div class="footer__legal">
                 <a href="#" class="footer__legal-link">Пользовательское соглашение</a>
                 <a href="#" class="footer__legal-link">Политика конфиденциальности</a>

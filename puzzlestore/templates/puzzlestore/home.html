@@ -8,11 +8,11 @@
 {% endblock %}
 
 {% block content %}
-    <div class="breadcrumbs"></div>
-    <h1 class="hidden">PuzzleStore</h1>
+    <div class="breadcrumbs" aria-label="Хлебные крошки"></div>
+    <h1 class="hidden">PuzzleStore — магазин настольных игр</h1>
 
-    <section class="blog">
-        <h2 class="blog__title h2">БЛОГ</h2>
+    <section class="blog" aria-labelledby="blog-title">
+        <h2 id="blog-title" class="blog__title h2">БЛОГ</h2>
         <div class="blog__container">
             <div class="blog__content-left">
                 {% if latest_games %}
@@ -31,41 +31,41 @@
                 {% if latest_games.0.image %}
                 <img src="{{ latest_games.0.image.url }}" alt="{{ latest_games.0.name }}" class="blog__image">
                 {% else %}
-                <img src="{% static 'puzzlestore/images/default_game.jpg' %}" alt="Default" class="blog__image">
+                <img src="{% static 'puzzlestore/images/default_game.jpg' %}" alt="{{ latest_games.0.name }}" class="blog__image">
                 {% endif %}
             </div>
         </div>
     </section>
 
-    <section class="popular">
-        <h2 class="popular__title h2">ПОПУЛЯРНЫЕ ИГРЫ</h2>
+    <section class="popular" aria-labelledby="popular-title">
+        <h2 id="popular-title" class="popular__title h2">ПОПУЛЯРНЫЕ ИГРЫ</h2>
         <div class="popular__wrapper">
-            <button class="popular__button-left"></button>
-            <div class="popular__scroller">
+            <button class="popular__button-left" aria-label="Прокрутить популярные игры влево" type="button"></button>
+            <div class="popular__scroller" role="list" aria-label="Список популярных игр">
                 {% for game in popular_games %}
-                <div class="popular__card">
+                <div class="popular__card" role="listitem">
                     {% if game.image %}
                     <img src="{{ game.image.url }}" alt="{{ game.name }}" class="popular__image">
                     {% else %}
                     <img src="{% static 'puzzlestore/images/default_game.jpg' %}" alt="{{ game.name }}" class="popular__image">
                     {% endif %}
                     <div class="popular__card-bottom">
-                        <a href="{% url 'puzzlestore:game_detail' game.id %}" class="popular__link link-cta">к товару</a>
+                        <a href="{% url 'puzzlestore:game_detail' game.id %}" class="popular__link link-cta" aria-label="Перейти к игре {{ game.name }}">к товару</a>
                     </div>
                 </div>
                 {% empty %}
-                <p>Пока нет продаж</p>
+                <p role="listitem">Пока нет продаж</p>
                 {% endfor %}
             </div>
-            <button class="popular__button-left"></button>
+            <button class="popular__button-right" aria-label="Прокрутить популярные игры вправо" type="button"></button>
         </div>
     </section>
 
-    <section class="sales">
-        <h2 class="sales__title h2">Акции</h2>
+    <section class="sales" aria-labelledby="sales-title">
+        <h2 id="sales-title" class="sales__title h2">Акции</h2>
         <div class="sales__container">
             {% for game in sale_games %}
-            <div class="sales__card">
+            <article class="sales__card">
                 {% if game.image %}
                 <img src="{{ game.image.url }}" alt="{{ game.name }}" class="sales__image">
                 {% else %}
@@ -73,129 +73,129 @@
                 {% endif %}
                 <div class="sales__content">
                     <h3 class="sales__card-title">{{ game.name }}</h3>
-                    <a href="{% url 'puzzlestore:game_detail' game.id %}" class="sales__link link-cta">Подробнее</a>
+                    <a href="{% url 'puzzlestore:game_detail' game.id %}" class="sales__link link-cta" aria-label="Подробнее об акции {{ game.name }}">Подробнее</a>
                 </div>
-            </div>
+            </article>
             {% empty %}
             <p>Акции временно недоступны</p>
             {% endfor %}
         </div>
     </section>
 
-    <section class="about">
-        <h2 class="about__title h2">О нас</h2>
+    <section class="about" aria-labelledby="about-title">
+        <h2 id="about-title" class="about__title h2">О нас</h2>
         <p class="about__description">
             Puzzle store - не просто магазин головоломок, это место, где сбываются <span class="underscored">детские мечты</span>. 
             Целые миры доступны для исследования и весёлого времяпрепровождения
         </p>
         
-        <div class="about__slider">
-            <button class="about__arrow about__arrow--left" type="button"></button>
+        <div class="about__slider" role="region" aria-roledescription="карусель" aria-label="Фотографии магазина">
+            <button class="about__arrow about__arrow--left" type="button" aria-label="Предыдущий слайд"></button>
             
             <div class="about__slides">
-                <div class="about__slide about__slide--side about__slide--left">
-                    <img src="{% static 'puzzlestore/images/shop.png' %}" alt="Магазин" class="about__image">
+                <div class="about__slide about__slide--side about__slide--left" role="group" aria-roledescription="слайд" aria-label="Слайд 1 из 3">
+                    <img src="{% static 'puzzlestore/images/shop.png' %}" alt="Интерьер магазина PuzzleStore" class="about__image">
                 </div>
-                <div class="about__slide about__slide--active">
-                    <img src="{% static 'puzzlestore/images/shop.png' %}" alt="Магазин" class="about__image">
+                <div class="about__slide about__slide--active" role="group" aria-roledescription="слайд" aria-label="Слайд 2 из 3, текущий">
+                    <img src="{% static 'puzzlestore/images/shop.png' %}" alt="Интерьер магазина PuzzleStore" class="about__image">
                     <div class="about__card-bottom">
                         <a href="#" class="about__map-btn link-cta">Карта</a>
                     </div>
                 </div>
-                <div class="about__slide about__slide--side about__slide--right">
-                    <img src="{% static 'puzzlestore/images/shop.png' %}" alt="Магазин" class="about__image">
+                <div class="about__slide about__slide--side about__slide--right" role="group" aria-roledescription="слайд" aria-label="Слайд 3 из 3">
+                    <img src="{% static 'puzzlestore/images/shop.png' %}" alt="Интерьер магазина PuzzleStore" class="about__image">
                 </div>
             </div>
             
-            <button class="about__arrow about__arrow--right" type="button"></button>
+            <button class="about__arrow about__arrow--right" type="button" aria-label="Следующий слайд"></button>
         </div>
         
-        <div class="about__dots">
-            <span class="about__dot"></span>
-            <span class="about__dot"></span>
-            <span class="about__dot about__dot--active"></span>
-            <span class="about__dot"></span>
-            <span class="about__dot"></span>
+        <div class="about__dots" role="tablist" aria-label="Навигация по слайдам">
+            <span class="about__dot" role="tab" aria-label="Перейти к слайду 1" tabindex="0"></span>
+            <span class="about__dot" role="tab" aria-label="Перейти к слайду 2" tabindex="0"></span>
+            <span class="about__dot about__dot--active" role="tab" aria-label="Перейти к слайду 3, текущий" aria-selected="true" tabindex="0"></span>
+            <span class="about__dot" role="tab" aria-label="Перейти к слайду 4" tabindex="0"></span>
+            <span class="about__dot" role="tab" aria-label="Перейти к слайду 5" tabindex="0"></span>
         </div>
     </section>
 
-    <section class="reviews">
-        <h2 class="reviews__title h2">Отзывы</h2>
+    <section class="reviews" aria-labelledby="reviews-title">
+        <h2 id="reviews-title" class="reviews__title h2">Отзывы</h2>
         <div class="reviews__container">
-            <div class="reviews__card">
+            <article class="reviews__card" aria-label="Отзыв Михаила">
                 <div class="reviews__top">
-                    <div class="reviews__stars">★★★★★</div>
+                    <div class="reviews__stars" role="img" aria-label="Рейтинг 5 из 5">★★★★★</div>
                     <div class="reviews__author">
-                        <img src="{% static 'puzzlestore/images/avatar.png' %}" alt="Михаил" class="reviews__avatar">
+                        <img src="{% static 'puzzlestore/images/avatar.png' %}" alt="Аватар Михаила" class="reviews__avatar">
                         <span class="reviews__name">Михаил</span>
                     </div>
                 </div>
-                <div class="reviews__text">
+                <blockquote class="reviews__text">
                     Настолка класс! Настолка класс! Настолка класс! Настолка класс!
-                </div>
-                <div class="reviews__date">25 сентября</div>
-            </div>
+                </blockquote>
+                <time class="reviews__date" datetime="2024-09-25">25 сентября</time>
+            </article>
 
-            <div class="reviews__card">
+            <article class="reviews__card" aria-label="Отзыв Не Михаила">
                 <div class="reviews__top">
-                    <div class="reviews__stars">★★★★★</div>
+                    <div class="reviews__stars" role="img" aria-label="Рейтинг 5 из 5">★★★★★</div>
                     <div class="reviews__author">
-                        <img src="{% static 'puzzlestore/images/avatar.png' %}" alt="Не Михаил" class="reviews__avatar">
+                        <img src="{% static 'puzzlestore/images/avatar.png' %}" alt="Аватар Не Михаила" class="reviews__avatar">
                         <span class="reviews__name">Не Михаил</span>
                     </div>
                 </div>
-                <div class="reviews__text">
+                <blockquote class="reviews__text">
                     Доставка быстрая, игра не пострадала, поддержка вежливая, куплю ещё!)))
-                </div>
-                <div class="reviews__date">21 февраля</div>
-            </div>
+                </blockquote>
+                <time class="reviews__date" datetime="2024-02-21">21 февраля</time>
+            </article>
 
-            <div class="reviews__card">
+            <article class="reviews__card" aria-label="Отзыв Михи">
                 <div class="reviews__top">
-                    <div class="reviews__stars">★★★★★</div>
+                    <div class="reviews__stars" role="img" aria-label="Рейтинг 5 из 5">★★★★★</div>
                     <div class="reviews__author">
-                        <img src="{% static 'puzzlestore/images/avatar.png' %}" alt="Миха" class="reviews__avatar">
+                        <img src="{% static 'puzzlestore/images/avatar.png' %}" alt="Аватар Михи" class="reviews__avatar">
                         <span class="reviews__name">Миха</span>
                     </div>
                 </div>
-                <div class="reviews__text">
+                <blockquote class="reviews__text">
                     Друг посоветовал, остался доволен
-                </div>
-                <div class="reviews__date">1 января</div>
-            </div>
+                </blockquote>
+                <time class="reviews__date" datetime="2024-01-01">1 января</time>
+            </article>
 
         </div>
     </section>
 
-    <section class="delivery">
-        <h2 class="delivery__title h2">Доставка и оплата</h2>
+    <section class="delivery" id="delivery" aria-labelledby="delivery-title">
+        <h2 id="delivery-title" class="delivery__title h2">Доставка и оплата</h2>
         <div class="delivery__container">
             <div class="delivery__content-left">
-                <ul class="delivery__list">
+                <ul class="delivery__list" aria-label="Условия доставки">
                     <li class="delivery__item">
-                        <img src="{% static 'puzzlestore/images/dice_1.svg' %}" alt="" class="delivery__dice">
+                        <img src="{% static 'puzzlestore/images/dice_1.svg' %}" alt="" class="delivery__dice" aria-hidden="true">
                         <span class="delivery__text">Мы гарантируем быструю и надежную доставку по всей России и СНГ.</span>
                     </li>
                     <li class="delivery__item">
-                        <img src="{% static 'puzzlestore/images/dice_2.svg' %}" alt="" class="delivery__dice">
+                        <img src="{% static 'puzzlestore/images/dice_2.svg' %}" alt="" class="delivery__dice" aria-hidden="true">
                         <span class="delivery__text">Бесплатная доставка при заказе от 3500 ₽.</span>
                     </li>
                     <li class="delivery__item">
-                        <img src="{% static 'puzzlestore/images/dice_3.svg' %}" alt="" class="delivery__dice">
+                        <img src="{% static 'puzzlestore/images/dice_3.svg' %}" alt="" class="delivery__dice" aria-hidden="true">
                         <span class="delivery__text">Выбор способа: СДЭК, Почта РФ, Boxberry — вы выбираете удобный.</span>
                     </li>
                     <li class="delivery__item">
-                        <img src="{% static 'puzzlestore/images/dice_4.svg' %}" alt="" class="delivery__dice">
+                        <img src="{% static 'puzzlestore/images/dice_4.svg' %}" alt="" class="delivery__dice" aria-hidden="true">
                         <span class="delivery__text">Оплата онлайн картой или при получении.</span>
                     </li>
                 </ul>
                 <a href="#" class="delivery__cta link-cta">
-                    <img src="{% static 'puzzlestore/images/order_arrow.svg' %}" alt="->" class="delivery__cta-arrow">
-                    Заказать
+                    <img src="{% static 'puzzlestore/images/order_arrow.svg' %}" alt="" class="delivery__cta-arrow" aria-hidden="true">
+                    <span>Заказать</span>
                 </a>
             </div>
             <div class="delivery__content-right">
-                <img src="{% static 'puzzlestore/images/delivery.png' %}" alt="Доставка" class="delivery__image">
+                <img src="{% static 'puzzlestore/images/delivery.png' %}" alt="Курьер доставляет настольные игры" class="delivery__image">
             </div>
         </div>
     </section>
