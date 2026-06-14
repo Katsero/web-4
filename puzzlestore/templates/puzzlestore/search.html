@@ -1,161 +1,134 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Поиск игр</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
-        form { margin-bottom: 30px; }
-        input[type="text"] { padding: 8px; width: 300px; border: 1px solid #ccc; }
-        button { padding: 8px 15px; background-color: #2196F3; color: white; border: none; cursor: pointer; }
-        .section { margin-bottom: 30px; padding: 15px; border: 1px solid #ddd; }
-        h2 { margin-top: 0; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        th { background-color: #eee; }
-        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; font-family: monospace; }
-        code { background: #f4f4f4; padding: 2px 5px; font-family: monospace; }
-        a { color: #0056b3; text-decoration: none; }
-        .status-yes { color: #d32f2f; font-weight: bold; }
-        .status-no { color: #388e3c; font-weight: bold; }
-    </style>
-</head>
-<body>
-    <h1>Поиск настольных игр</h1>
-    
-    <form method="get" action="{% url 'puzzlestore:search' %}">
-        <input type="text" name="q" value="{{ query }}" placeholder="Введите название (например: кар)">
-        <button type="submit">Найти</button>
-    </form>
+{% extends 'puzzlestore/base.html' %}
+{% load static %}
 
-    {% if query %}
-    <div class="section">
-        <h2>Поиск с __icontains</h2>
-        <p>Найдено игр: <b>{{ results_icontains|length }}</b></p>
-        <table>
-            <tr><th>ID</th><th>Название</th><th>Издатель</th><th>Цена</th></tr>
-            {% for game in results_icontains %}
-            <tr>
-                <td>{{ game.id }}</td>
-                <td><a href="{% url 'puzzlestore:game_detail' game.id %}">{{ game.name }}</a></td>
-                <td>
-                    {% if game.publisher.website %}
-                        <a href="{{ game.publisher.website }}" target="_blank">{{ game.publisher.name }}</a>
-                    {% else %}
-                        {{ game.publisher.name }}
-                    {% endif %}
-                </td>
-                <td>{{ game.price }} руб.</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="4">Ничего не найдено</td></tr>
-            {% endfor %}
-        </table>
-    </div>
+{% block title %}Поиск игр — PuzzleStore{% endblock %}
 
-    <div class="section">
-        <h2>Поиск с __contains</h2>
-        <p>Найдено игр: <b>{{ results_contains|length }}</b></p>
-        <table>
-            <tr><th>ID</th><th>Название</th><th>Издатель</th><th>Цена</th></tr>
-            {% for game in results_contains %}
-            <tr>
-                <td>{{ game.id }}</td>
-                <td><a href="{% url 'puzzlestore:game_detail' game.id %}">{{ game.name }}</a></td>
-                <td>
-                    {% if game.publisher.website %}
-                        <a href="{{ game.publisher.website }}" target="_blank">{{ game.publisher.name }}</a>
-                    {% else %}
-                        {{ game.publisher.name }}
-                    {% endif %}
-                </td>
-                <td>{{ game.price }} руб.</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="4">Ничего не найдено</td></tr>
-            {% endfor %}
-        </table>
-    </div>
-    {% endif %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'puzzlestore/css/search.css' %}">
+{% endblock %}
 
-    <div class="section">
-        <h2>values() — Список словарей</h2>
-        <table>
-            <tr><th>ID</th><th>Название</th><th>Сайт</th></tr>
-            {% for pub in publishers_values %}
-            <tr>
-                <td>{{ pub.id }}</td>
-                <td>{{ pub.name }}</td>
-                <td>{{ pub.website|default:"-" }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
+{% block content %}
+<div class="search-page">
+    <div class="search-layout">
+        <aside class="search-filters">
+            <h3 class="search-filters__title">Фильтры:</h3>
+            
+            <form method="get" action="{% url 'puzzlestore:search' %}" class="search-filters__form">
+                {% if current_genre_id %}
+                <input type="hidden" name="genre" value="{{ current_genre_id }}">
+                {% endif %}
+                
+                <div class="search-filters__group">
+                    <label class="search-filters__label">Поиск по названию</label>
+                    <input type="text" name="q" value="{{ query }}" placeholder="Введите название..." class="search-filters__input">
+                </div>
 
-    <div class="section">
-        <h2>values_list(flat=True) — Плоский список</h2>
-        <pre>{{ game_names_flat }}</pre>
-    </div>
+                <div class="search-filters__group">
+                    <label class="search-filters__label">Издатель</label>
+                    <div class="search-filters__checkboxes">
+                        {% for pub in publishers_values %}
+                        <label class="search-filters__checkbox">
+                            <input type="checkbox" name="publisher" value="{{ pub.id }}" {% if pub.id in current_publisher_ids %}checked{% endif %}>
+                            <span>{{ pub.name }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
 
-    <div class="section">
-        <h2>values_list() — Список кортежей</h2>
-        <table>
-            <tr><th>Название</th><th>Цена</th></tr>
-            {% for item in game_prices_list %}
-            <tr>
-                <td>{{ item.0 }}</td>
-                <td>{{ item.1 }} руб.</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
+                <button type="submit" class="search-filters__apply">Применить</button>
+            </form>
+        </aside>
 
-    <div class="section">
-        <h2>count() — Подсчёт количества</h2>
-        <p>Игр в наличии на складе: <b>{{ games_in_stock_count }}</b></p>
-    </div>
+        <div class="search-content">
+            <div class="search-tags">
+                {% for genre in genres_list %}
+                <a href="{% url 'puzzlestore:search' %}?q={{ query }}&genre={{ genre.id }}{% for pub_id in current_publisher_ids %}&publisher={{ pub_id }}{% endfor %}" 
+                   class="search-tag {% if current_genre_id == genre.id %}search-tag--active{% endif %}">
+                    {{ genre.name }}
+                </a>
+                {% endfor %}
+                {% if current_genre_id %}
+                <a href="{% url 'puzzlestore:search' %}?q={{ query }}{% for pub_id in current_publisher_ids %}&publisher={{ pub_id }}{% endfor %}" class="search-tag search-tag--reset">Сбросить</a>
+                {% endif %}
+            </div>
 
-    <div class="section">
-        <h2>exists() — Проверка наличия</h2>
-        <p>
-            Есть ли игры с нулевым остатком: 
-            {% if has_out_of_stock_games %}
-                <span class="status-yes">Да, требуют пополнения</span>
+            {% if query %}
+            <div class="search-results">
+                <div class="search-results__count">
+                    Найдено игр: <b>{{ total_count }}</b>
+                </div>
+
+                {% if results %}
+                <div class="search-results__list">
+                    {% for game in results %}
+                    <article class="game-card">
+                        <div class="game-card__header">
+                            <h3 class="game-card__title">
+                                <a href="{% url 'puzzlestore:game_detail' game.id %}">{{ game.name }}</a>
+                            </h3>
+                        </div>
+                        
+                        <div class="game-card__body">
+                            <div class="game-card__images">
+                                {% if game.image %}
+                                <img src="{{ game.image.url }}" alt="{{ game.name }}" class="game-card__image-main">
+                                {% else %}
+                                <img src="{% static 'puzzlestore/images/default_game.jpg' %}" alt="{{ game.name }}" class="game-card__image-main">
+                                {% endif %}
+                            </div>
+                            
+                            <div class="game-card__info">
+                                <div class="game-card__meta">
+                                    <div class="game-card__meta-row">
+                                        <img src="{% static 'puzzlestore/images/icon_publisher.svg' %}" alt="" class="game-card__meta-icon" aria-hidden="true">
+                                        <span>{{ game.publisher.name }}</span>
+                                    </div>
+                                    <div class="game-card__meta-row">
+                                        <img src="{% static 'puzzlestore/images/icon_age.svg' %}" alt="" class="game-card__meta-icon" aria-hidden="true">
+                                        <span>{{ game.age_limit.name }}</span>
+                                    </div>
+                                    <div class="game-card__meta-row">
+                                        <img src="{% static 'puzzlestore/images/icon_stock.svg' %}" alt="" class="game-card__meta-icon" aria-hidden="true">
+                                        <span>В наличии: {{ game.current_stock }} шт.</span>
+                                    </div>
+                                    <div class="game-card__meta-row">
+                                        <img src="{% static 'puzzlestore/images/icon_time.svg' %}" alt="" class="game-card__meta-icon" aria-hidden="true">
+                                        <span>~ 2.5ч</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="game-card__description">
+                                    {{ game.description|truncatewords:30|default:"Описание очень крутой настолки, в которую хочется поиграть." }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="game-card__footer">
+                            <span class="game-card__price">{{ game.price }} ₽</span>
+                            <a href="{% url 'puzzlestore:game_detail' game.id %}" class="game-card__btn">Подробнее</a>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="search-results__empty">
+                    <p>Ничего не найдено. Попробуйте изменить запрос.</p>
+                </div>
+                {% endif %}
+            </div>
             {% else %}
-                <span class="status-no">Нет, всё в наличии</span>
+            <div class="search-results__empty">
+                <p>Введите запрос для поиска игр.</p>
+            </div>
             {% endif %}
-        </p>
+
+            {% if has_more %}
+            <a href="{% url 'puzzlestore:search' %}?q={{ query }}{% if current_genre_id %}&genre={{ current_genre_id }}{% endif %}{% for pub_id in current_publisher_ids %}&publisher={{ pub_id }}{% endfor %}&limit={{ next_limit }}" 
+               class="search-load-more">
+                загрузить больше
+            </a>
+            {% endif %}
+        </div>
     </div>
-
-    <div class="section">
-        <h2>update() — Массовое обновление</h2>
-        <p>Продаж со статусом "Новый" сейчас: <b>{{ new_sales_count }}</b></p>
-        
-        {% if update_message %}
-            <p style="color: green; font-weight: bold;">{{ update_message }}</p>
-            <p>Продаж со статусом "Новый" после клика: <b>{{ new_sales_count }}</b></p>
-        {% endif %}
-
-        <form method="post" style="margin-top: 10px;">
-            {% csrf_token %}
-            <button type="submit" name="action_update" value="1">Вызвать update() (Новые -> Оплачено)</button>
-        </form>
-    </div>
-
-    <div class="section">
-        <h2>delete() — Массовое удаление</h2>
-        <p>Продаж со статусом "Отменён" сейчас: <b>{{ cancelled_sales_count }}</b></p>
-        
-        {% if delete_message %}
-            <p style="color: red; font-weight: bold;">{{ delete_message }}</p>
-            <p>Продаж со статусом "Отменён" после клика: <b>{{ cancelled_sales_count }}</b></p>
-        {% endif %}
-
-        <form method="post" style="margin-top: 10px;">
-            {% csrf_token %}
-            <button type="submit" name="action_delete" value="1">Вызвать delete() (Удалить отменённые)</button>
-        </form>
-    </div>
-
-    <p><a href="{% url 'puzzlestore:catalog' %}">Назад к каталогу</a></p>
-</body>
-</html>
+</div>
+{% endblock %}
