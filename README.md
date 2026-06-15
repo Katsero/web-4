@@ -11,3 +11,6 @@ pip freeze | Out-File -Encoding utf8 requirements.txt
     если кодировка шакалит
 pip install -r requirements.txt
 docker-compose up -d
+
+docker exec -it puzzlestore_db psql -U puzzlestore_user -d puzzlestore_db
+    Вставить код
