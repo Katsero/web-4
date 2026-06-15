@@ -49,3 +49,5 @@ Thumbs.db
 *.key
 secret_key.py
 config/local_settings.py
+
+mynewfile.txt
