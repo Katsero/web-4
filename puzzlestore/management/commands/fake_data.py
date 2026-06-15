@@ -1,6 +1,9 @@
 import random
+from decimal import Decimal
+from io import BytesIO
+from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.utils import timezone
 from faker import Faker
 from puzzlestore.models import (
@@ -14,6 +17,16 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('--games', type=int, default=20, help='Number of games to generate')
         parser.add_argument('--users', type=int, default=5, help='Number of new users to generate')
+
+    def _download_image(self, seed):
+        try:
+            import urllib.request
+            url = f"https://picsum.photos/seed/{seed}/400/400"
+            with urllib.request.urlopen(url, timeout=5) as response:
+                image_data = response.read()
+            return ContentFile(image_data, name=f'game_{seed}.jpg')
+        except Exception:
+            return None
 
     @transaction.atomic
     def handle(self, *args, **options):
@@ -31,8 +44,11 @@ class Command(BaseCommand):
         existing_users = list(User.objects.all())
         new_users = []
         for _ in range(options['users']):
+            username = fake.user_name()
+            while User.objects.filter(username=username).exists():
+                username = fake.user_name() + str(random.randint(1, 999))
             new_users.append(User.objects.create_user(
-                username=fake.user_name(),
+                username=username,
                 email=fake.email(),
                 password='password123'
             ))
@@ -53,23 +69,40 @@ class Command(BaseCommand):
         ]
 
         games = []
+        created_count = 0
+        skipped_count = 0
+
         for i in range(options['games']):
             if i < len(game_names):
                 name = game_names[i]
             else:
                 name = f"{fake.word().title()} {fake.word().title()} {i}"
 
-            game = BoardGame.objects.create(
+            publisher = random.choice(publishers)
+
+            if BoardGame.objects.filter(name=name, publisher=publisher).exists():
+                skipped_count += 1
+                continue
+
+            game = BoardGame(
                 name=name,
-                image_url=f"https://picsum.photos/seed/{i}/400/400",
                 description=fake.paragraph(nb_sentences=4),
-                price=fake.pyfloat(min_value=800, max_value=4500, right_digits=2),
-                publisher=random.choice(publishers),
+                price=Decimal(str(round(random.uniform(800, 4500), 2))),
+                publisher=publisher,
                 age_limit=random.choice(age_limits),
                 current_stock=random.randint(0, 60),
-                rating_avg=round(random.uniform(3.5, 5.0), 1) if random.random() > 0.2 else None,
-                created_at=timezone.make_aware(fake.date_time_between(start_date='-2y', end_date='now'))
+                rating_avg=Decimal(str(round(random.uniform(3.5, 5.0), 2))) if random.random() > 0.2 else None,
             )
+
+            image_file = self._download_image(f'{name}_{i}')
+            if image_file:
+                game.image = image_file
+
+            try:
+                game.save()
+            except IntegrityError:
+                skipped_count += 1
+                continue
 
             k_genres = min(random.randint(1, 3), len(genres))
             game.genres.set(random.sample(genres, k=k_genres))
@@ -77,16 +110,17 @@ class Command(BaseCommand):
             k_creators = min(random.randint(1, 2), len(creators))
             selected_creators = random.sample(creators, k=k_creators)
             for cr in selected_creators:
-                BoardGameCreator.objects.create(game=game, creator=cr)
+                BoardGameCreator.objects.get_or_create(game=game, creator=cr)
 
             games.append(game)
+            created_count += 1
 
         for game in games:
             supply_date = fake.date_between(start_date='-1y', end_date='-2m')
             Supply.objects.create(
                 game=game,
                 quantity=random.randint(20, 100),
-                unit_cost=game.price * random.uniform(0.5, 0.7),
+                unit_cost=Decimal(str(round(float(game.price) * random.uniform(0.5, 0.7), 2))),
                 supply_date=supply_date
             )
 
@@ -96,7 +130,8 @@ class Command(BaseCommand):
                     quantity=random.randint(1, 4),
                     unit_price=game.price,
                     sale_date=timezone.make_aware(fake.date_time_between(start_date='-6m', end_date='now')),
-                    user=random.choice(all_users) if random.random() > 0.4 and all_users else None
+                    user=random.choice(all_users) if random.random() > 0.4 and all_users else None,
+                    status=random.choice(['new', 'paid', 'shipped', 'delivered', 'cancelled'])
                 )
 
         active_users = all_users[:min(5, len(all_users))]
@@ -105,15 +140,15 @@ class Command(BaseCommand):
             if k_cart > 0:
                 cart_games = random.sample(games, k=k_cart)
                 for g in cart_games:
-                    Cart.objects.create(user=user, game=g, quantity=random.randint(1, 2))
+                    Cart.objects.get_or_create(user=user, game=g, defaults={'quantity': random.randint(1, 2)})
 
                 remaining_games = [g for g in games if g not in cart_games]
                 if remaining_games:
                     k_wish = min(random.randint(1, 2), len(remaining_games))
                     wish_games = random.sample(remaining_games, k=k_wish)
                     for g in wish_games:
-                        Wishlist.objects.create(user=user, game=g)
+                        Wishlist.objects.get_or_create(user=user, game=g)
 
         self.stdout.write(self.style.SUCCESS(
-            f'Successfully generated: {len(games)} games, {len(new_users)} new users, supplies, sales, carts and wishlists.'
+            f'Generated: {created_count} games, {len(new_users)} new users, supplies, sales, carts and wishlists. Skipped: {skipped_count} (duplicates).'
         ))
