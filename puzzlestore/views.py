@@ -14,7 +14,7 @@ def home_view(request):
         sales_count=Count('sales')
     ).filter(
         sales_count__gt=0
-    ).order_by('-sales_count')[:4]
+    ).order_by('-sales_count')[:3]
     
     sale_games = BoardGame.objects.filter(
         price__lt=2000
