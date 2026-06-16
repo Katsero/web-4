@@ -38,3 +38,31 @@ HAVING MAX(s.sale_date) < CURRENT_DATE - INTERVAL '60 days' OR MAX(s.sale_date) 
 -- CREATE ROLE puzzlestore_reader;
 -- GRANT USAGE ON SCHEMA puzzlestore TO puzzlestore_reader;
 -- GRANT SELECT ON puzzlestore.ps_v_publisher_stats TO puzzlestore_reader;
+
+-- =========================================================================
+-- ЗАПРОСЫ ДЛЯ ПРОВЕРКИ ИНДЕКСОВ И ПРЕДСТАВЛЕНИЙ
+-- =========================================================================
+
+-- ПРОВЕРКА 1: Доказательство работы индекса каталога
+EXPLAIN ANALYZE
+SELECT id, name, price 
+FROM puzzlestore_boardgame
+WHERE publisher_id = 1 AND current_stock > 0
+ORDER BY rating_avg DESC
+LIMIT 10;
+
+-- ПРОВЕРКА 2: Доказательство работы индекса продаж
+EXPLAIN ANALYZE
+SELECT id, quantity, unit_price 
+FROM puzzlestore_sale
+WHERE sale_date > CURRENT_DATE - INTERVAL '1 year' 
+  AND status = 'completed';
+
+-- ПРОВЕРКА 3: Обычное представление (Покажет красивую таблицу со статистикой)
+SELECT * FROM ps_v_publisher_stats 
+ORDER BY total_revenue DESC;
+
+-- ПРОВЕРКА 4: Временное представление (Кандидаты на уценку)
+-- Покажет игры, которые не продавались 60 дней или не продавались вообще.
+SELECT * FROM ps_temp_stagnant_games 
+ORDER BY last_sale_date ASC NULLS FIRST;

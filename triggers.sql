@@ -62,7 +62,7 @@ AFTER INSERT ON puzzlestore_sale
 FOR EACH ROW EXECUTE FUNCTION ps_trg_update_stock_on_sale();
 
 -- =========================================================================
--- ЗАПРОСЫ ДЛЯ ПРОВЕРКИ ТРИГГЕРОВ (САМЫЕ ВАЖНЫЕ ДЛЯ ОТЧЁТА!)
+-- ЗАПРОСЫ ДЛЯ ПРОВЕРКИ ТРИГГЕРОВ
 -- =========================================================================
 
 -- ПРОВЕРКА 1: Триггер валидации (ДОЛЖЕН ВЫДАТЬ КРАСНУЮ ОШИБКУ)
@@ -76,10 +76,10 @@ UPDATE puzzlestore_boardgame SET price = 9999 WHERE id = 1;
 SELECT * FROM ps_price_audit ORDER BY changed_at DESC LIMIT 1;
 
 -- ПРОВЕРКА 3: Триггер авто-обновления стока (ТРИ ШАГА)
--- Шаг А: Смотрим текущий остаток игры 1 (запомни число, например, было 10)
+-- Шаг А: Смотрим текущий остаток игры 1
 SELECT current_stock FROM puzzlestore_boardgame WHERE id = 1;
 -- Шаг Б: Делаем продажу 2 штук этой игры
 INSERT INTO puzzlestore_sale (game_id, quantity, unit_price, sale_date, user_id, status)
 VALUES (1, 2, 5000, CURRENT_TIMESTAMP, 1, 'completed');
--- Шаг В: Снова смотрим остаток (он ДОЛЖЕН уменьшиться на 2, стало 8!)
+-- Шаг В: Снова смотрим остаток
 SELECT current_stock FROM puzzlestore_boardgame WHERE id = 1;
